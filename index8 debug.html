@@ -1,0 +1,2219 @@
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:var(--font-sans);background:#2a3a6e;color:#EEEBD8;padding:0;min-height:100vh}
+.app-header{background:#1769c8;padding:1rem 1.5rem;display:flex;align-items:center;gap:16px;border-bottom:4px solid #f96020}
+.app-header h2{font-size:18px;font-weight:500;color:#EEEBD8;margin:0}
+.app-body{padding:1.25rem 1.5rem;background:#2a3a6e;min-height:calc(100vh - 68px)}
+.drop-zone{border:2px dashed #6a9fd8;border-radius:12px;padding:2.5rem 1rem;text-align:center;cursor:pointer;background:#1e2d5a;transition:background .15s}
+.drop-zone:hover,.drop-zone.drag{background:#263570}
+.drop-zone p{font-size:14px;color:#9ab8d8;margin-top:6px}
+.drop-label{font-size:15px;font-weight:500;color:#EEEBD8}
+#file-input{display:none}
+.section{margin-top:1.25rem}
+.label{font-size:13px;color:#9ab8d8;margin-bottom:4px;font-weight:500}
+.row{display:flex;gap:8px;align-items:center;flex-wrap:wrap;margin-top:.5rem}
+select{font-size:13px;padding:6px 10px;border-radius:8px;border:1.5px solid #4a6ea8;background:#1e2d5a;color:#EEEBD8}
+.btn{font-size:13px;padding:6px 16px;border-radius:8px;border:none;cursor:pointer;font-weight:500;transition:background .15s,transform .1s}
+.btn:active{transform:scale(.97)}
+.btn-primary{background:#1769c8;color:#EEEBD8}
+.btn-primary:hover{background:#1255a8}
+.btn-secondary{background:#1e2d5a;color:#EEEBD8;border:1.5px solid #4a6ea8}
+.btn-secondary:hover{background:#263570}
+.btn-orange{background:#f96020;color:#fff}
+.btn-orange:hover{background:#e05010}
+.tabs{display:flex;gap:0;margin-top:1.5rem;border-bottom:2px solid #f96020}
+.tab{font-size:13px;padding:8px 20px;cursor:pointer;border:none;border-radius:8px 8px 0 0;color:#9ab8d8;background:#1e2d5a;font-weight:500;margin-right:4px}
+.tab.active{background:#1769c8;color:#EEEBD8}
+.tab-content{display:none;padding-top:1.25rem}
+.tab-content.active{display:block}
+table{width:100%;border-collapse:collapse;font-size:13px;background:#1e2d5a;border-radius:10px;overflow:hidden;box-shadow:0 1px 6px rgba(0,0,0,.3)}
+th{padding:9px 14px;background:#1769c8;color:#EEEBD8;text-align:left;font-weight:500}
+td{padding:7px 12px;border-bottom:1px solid #2a3a6e;color:#EEEBD8}
+tr:last-child td{border-bottom:none}
+tr:nth-child(even) td{background:#233269}
+td select{border:1px solid #4a6ea8;border-radius:6px;padding:3px 6px;background:#1e2d5a;font-size:13px;color:#EEEBD8}
+td input{width:100%;font-size:13px;border:1px solid #4a6ea8;border-radius:6px;padding:3px 6px;background:#1e2d5a;color:#EEEBD8;outline:none}
+td input:focus{border-color:#f96020}
+.chart-outer{position:relative;width:100%;max-width:1200px;margin-top:.5rem}
+.chart-wrap{position:relative;width:100%;height:480px;cursor:crosshair;border-radius:10px;overflow:hidden}
+#select-box{position:absolute;border:2px solid #f96020;background:rgba(249,96,32,0.15);pointer-events:none;display:none;z-index:10}
+.hint{font-size:12px;color:#9ab8d8;margin-top:6px}
+.toolbar{display:flex;gap:8px;margin-top:.75rem;flex-wrap:wrap;align-items:center}
+.filter-bar{display:none;flex-wrap:wrap;gap:8px;align-items:center;margin-bottom:1rem;background:#1e2d5a;padding:10px 14px;border-radius:10px;justify-content:flex-start}
+.filter-bar span{font-size:13px;color:#9ab8d8;font-weight:500}
+.filter-btn{font-size:13px;padding:5px 16px;border-radius:20px;border:1.5px solid #4a6ea8;background:#1e2d5a;color:#9ab8d8;cursor:pointer;font-weight:500}
+.filter-btn:hover{background:#263570;color:#EEEBD8}
+.filter-btn.active{background:#f96020;border-color:#f96020;color:#fff}
+.rg-section{background:#1e2d5a;border-radius:12px;padding:1.25rem;border:1.5px solid #4a6ea8;margin-bottom:1rem}
+.rg-section-title{font-size:14px;font-weight:500;color:#EEEBD8;display:flex;justify-content:space-between;align-items:center;cursor:pointer;user-select:none}
+.rg-section-title:hover{color:#7ab0e0}
+.rg-toggle{font-size:18px;color:#9ab8d8;line-height:1}
+.rg-section-body{margin-top:1rem}
+.rg-section-body.collapsed{display:none}
+.rg-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:.75rem}
+.rg-field{display:flex;flex-direction:column;gap:4px}
+.rg-field.rg-full{grid-column:1/-1}
+.rg-field label{font-size:12px;color:#9ab8d8;font-weight:500}
+.rg-field input{font-size:13px;padding:6px 10px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8;outline:none}
+.rg-field input:focus{border-color:#f96020}
+.rg-field input.tp-filled{border-color:#1769c8;background:#0d1e3a;color:#7ab0e0;cursor:default}
+.tp-tag{font-size:10px;color:#4a6ea8;background:#0d1e3a;border:1px solid #1e3a6a;padding:1px 7px;border-radius:8px;margin-left:6px;vertical-align:middle;font-weight:500;text-transform:uppercase;letter-spacing:.04em}
+.rg-ref-table{width:100%;border-collapse:collapse;font-size:12px;margin-top:.5rem}
+.rg-ref-table th{padding:6px 10px;background:#1255a8;color:#EEEBD8;text-align:left;font-weight:500}
+.rg-ref-table td{padding:5px 10px;border-bottom:1px solid #2a3a6e;color:#9ab8d8}
+.rg-ref-table tr:last-child td{border-bottom:none}
+.rg-ref-table tr:nth-child(even) td{background:#0d1e3a}
+#status{font-size:13px;color:#9ab8d8;margin-top:.5rem;white-space:pre}
+.conc-section{margin-bottom:1.25rem}
+.conc-title{font-size:13px;font-weight:600;color:#7ab0e0;margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.05em}
+.conc-table{width:100%;border-collapse:collapse;font-size:13px;background:#162348;border-radius:8px;overflow:hidden;margin-bottom:.5rem}
+.conc-table th{padding:8px 12px;background:#1255a8;color:#EEEBD8;text-align:left;font-weight:500}
+.conc-table td{padding:7px 12px;border-bottom:1px solid #2a3a6e;color:#EEEBD8}
+.conc-table tr:last-child td{border-bottom:none}
+.conc-table tr:nth-child(even) td{background:#1a2e55}
+
+.conc-warn{font-size:12px;color:#f96020;margin-top:.25rem}
+</style>
+
+<div class="app-header">
+  <h2>Thermal Profile Visualizer</h2>
+</div>
+
+<div class="app-body">
+  <div class="drop-zone" id="drop-zone">
+    <input type="file" id="file-input" accept=".xlsx,.xls,.csv,.txt,.dat">
+    <div class="drop-label">Drop your Excel or CSV file here</div>
+    <p>or click to browse</p>
+  </div>
+
+  <div id="after-upload" style="display:none">
+    <div class="section" id="autoclave-type-section" style="display:none">
+      <div class="label">Autoclave type:</div>
+      <div class="row"><select id="autoclave-type"><option value="large">Large Autoclave</option><option value="medium">Medium Autoclave</option></select></div>
+    </div>
+    <div class="section">
+      <div class="label">Select MFID to plot:</div>
+      <div class="row">
+        <select id="mfid-sel"></select>
+        <button class="btn btn-primary" id="plot-btn">Plot</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="tabs-wrap" style="display:none">
+    <div class="tabs">
+      <button class="tab active" id="tab-input" onclick="switchTab('input')">TC # Input</button>
+      <button class="tab" id="tab-analysis" onclick="switchTab('analysis')">Data Analysis</button>
+      <button class="tab" id="tab-report" onclick="switchTab('report')">Report Generator</button>
+    </div>
+
+    <div class="tab-content active" id="content-input">
+      <div style="overflow-x:auto">
+        <table>
+          <thead><tr><th>Autoclave TC #</th><th>TP TC #</th><th>Type</th></tr></thead>
+          <tbody id="tc-table-body"></tbody>
+        </table>
+      </div>
+    </div>
+
+    <div class="tab-content" id="content-analysis">
+      <div class="filter-bar" id="filter-bar">
+        <span>Filter:</span>
+        <button class="filter-btn active" data-type="All">All</button>
+        <button class="filter-btn" data-type="Part TC">Part TC</button>
+        <button class="filter-btn" data-type="Tool TC">Tool TC</button>
+        <button class="filter-btn" data-type="TPI TC">TPI TC</button>
+        <label id="outlier-toggle-wrap" style="margin-left:auto;display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none">
+          <span style="font-size:13px;color:#9ab8d8;font-weight:500">Remove Outliers</span>
+          <span id="outlier-switch" style="position:relative;display:inline-block;width:36px;height:20px">
+            <span id="outlier-track" style="position:absolute;inset:0;border-radius:10px;background:#2a3a6e;border:1.5px solid #4a6ea8;transition:background .2s"></span>
+            <span id="outlier-thumb" style="position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#9ab8d8;transition:transform .2s,background .2s"></span>
+          </span>
+        </label>
+      </div>
+      <div class="chart-outer">
+        <div class="chart-wrap" id="chart-wrap"><canvas id="myChart"></canvas><div id="select-box"></div></div>
+        <div class="chart-wrap" id="compare-chart-wrap" style="display:none;height:480px"><canvas id="compareChart"></canvas></div>
+      </div>
+      <div class="hint" id="zoom-hint" style="display:none">Scroll to zoom · Draw a box to zoom in</div>
+      <div class="toolbar" id="toolbar" style="display:none">
+        <button class="btn btn-secondary" id="z-reset">Reset Zoom</button>
+        <button class="btn btn-secondary" id="report-toggle">Report Mode: Off</button>
+        <button class="btn btn-secondary" id="compare-toggle">Compare Mode: Off</button>
+        <button class="btn btn-secondary" id="conclusion-toggle">Conclusion: Off</button>
+        <button class="btn btn-orange" id="export-btn">Export PNG ↓</button>
+      </div>
+      <div id="conclusion-panel" style="display:none;margin-top:1rem;background:#1e2d5a;border-radius:12px;padding:1.25rem;border:1.5px solid #4a6ea8">
+        <div style="margin-bottom:1rem">
+          <span style="font-size:14px;font-weight:600;color:#EEEBD8;letter-spacing:.02em">Conclusion</span>
+        </div>
+        <div id="conclusion-content"><span style="font-size:13px;color:#9ab8d8">Click "Run Analysis" to compute leading/lagging TCs and hold data.</span></div>
+        <div style="margin-top:1rem">
+          <button class="btn btn-primary" id="run-conclusion-btn">Run Analysis</button>
+          <span id="conclusion-status" style="font-size:12px;color:#9ab8d8;margin-left:10px"></span>
+        </div>
+      </div>
+      <div id="compare-panel" style="display:none;margin-top:1rem;background:#1e2d5a;border-radius:10px;padding:1rem">
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap;align-items:flex-start">
+          <div>
+            <div class="label">Reference TC (TP TC #):</div>
+            <select id="ref-tc-sel" style="margin-top:4px"></select>
+          </div>
+          <div>
+            <div class="label">Compare against:</div>
+            <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:4px">
+              <button class="filter-btn active" data-cmp="All TCs" onclick="onCmpBtn(this)">All TCs</button>
+              <button class="filter-btn" data-cmp="Part TC" onclick="onCmpBtn(this)">Part TC</button>
+              <button class="filter-btn" data-cmp="Tool TC" onclick="onCmpBtn(this)">Tool TC</button>
+              <button class="filter-btn" data-cmp="TPI TC" onclick="onCmpBtn(this)">TPI TC</button>
+              <button class="filter-btn" data-cmp="custom" onclick="onCmpBtn(this)">Custom list…</button>
+            </div>
+          </div>
+          <div id="compare-custom-wrap" style="display:none">
+            <div class="label">Custom TP TC list (comma-separated):</div>
+            <input type="text" id="custom-tc-input" placeholder="e.g. 2, 3, 11" style="margin-top:4px;font-size:13px;padding:5px 10px;border-radius:8px;border:1.5px solid #4a6ea8;background:#1e2d5a;color:#EEEBD8;width:260px">
+            <div id="custom-tc-error" style="display:none;font-size:12px;color:#f96020;margin-top:4px"></div>
+          </div>
+          <div style="align-self:flex-end"><button class="btn btn-primary" id="compare-plot-btn">Plot Deviation</button></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tab-content" id="content-report">
+      <div style="display:flex;align-items:center;justify-content:flex-end;margin-bottom:.75rem">
+        <label style="display:flex;align-items:center;gap:8px;cursor:pointer;user-select:none">
+          <span style="font-size:13px;color:#9ab8d8;font-weight:500">Enable editing locked fields</span>
+          <span id="edit-lock-switch" style="position:relative;display:inline-block;width:36px;height:20px">
+            <span id="edit-lock-track" style="position:absolute;inset:0;border-radius:10px;background:#2a3a6e;border:1.5px solid #4a6ea8;transition:background .2s"></span>
+            <span id="edit-lock-thumb" style="position:absolute;top:3px;left:3px;width:12px;height:12px;border-radius:50%;background:#9ab8d8;transition:transform .2s,background .2s"></span>
+          </span>
+        </label>
+      </div>
+      <div style="display:flex;gap:1.5rem;flex-wrap:wrap;margin-top:.5rem">
+        <div style="flex:1;min-width:240px;background:#1e2d5a;border-radius:12px;padding:1.25rem;border:1.5px solid #4a6ea8">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">
+            <div style="width:10px;height:10px;border-radius:50%;background:#1769c8"></div>
+            <span style="font-size:14px;font-weight:500;color:#EEEBD8">Grade A report template</span>
+          </div>
+          <label style="display:flex;flex-direction:column;align-items:center;gap:8px;border:2px dashed #4a6ea8;border-radius:10px;padding:1.25rem 1rem;cursor:pointer;background:#162348;text-align:center" id="grade-a-label">
+            <input type="file" id="grade-a-file" accept=".docx" style="display:none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ab8d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span style="font-size:12px;color:#9ab8d8" id="grade-a-name">Click to upload .docx template</span>
+          </label>
+          <button id="grade-a-clear" onclick="clearTemplate('a')" style="display:none;margin-top:8px;width:100%;font-size:12px;padding:4px 0;border-radius:6px;border:1px solid #f96020;background:transparent;color:#f96020;cursor:pointer">✕ Remove template</button>
+          <div id="grade-a-error" style="display:none;margin-top:6px;font-size:12px;color:#f96020;text-align:center">⚠ Only .docx files are supported</div>
+        </div>
+        <div style="flex:1;min-width:240px;background:#1e2d5a;border-radius:12px;padding:1.25rem;border:1.5px solid #4a6ea8">
+          <div style="display:flex;align-items:center;gap:8px;margin-bottom:1rem">
+            <div style="width:10px;height:10px;border-radius:50%;background:#f96020"></div>
+            <span style="font-size:14px;font-weight:500;color:#EEEBD8">Thermal Profile Plan</span>
+          </div>
+          <label style="display:flex;flex-direction:column;align-items:center;gap:8px;border:2px dashed #4a6ea8;border-radius:10px;padding:1.25rem 1rem;cursor:pointer;background:#162348;text-align:center" id="tp-plan-label">
+            <input type="file" id="tp-plan-file" accept=".docx" style="display:none">
+            <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="#9ab8d8" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+            <span style="font-size:12px;color:#9ab8d8" id="tp-plan-name">Click to upload .docx document</span>
+          </label>
+          <div id="tp-plan-status" style="display:none;margin-top:8px;font-size:12px;color:#9ab8d8;text-align:center"></div>
+          <button id="tp-plan-clear" onclick="clearTpPlan()" style="display:none;margin-top:8px;width:100%;font-size:12px;padding:4px 0;border-radius:6px;border:1px solid #f96020;background:transparent;color:#f96020;cursor:pointer">✕ Remove plan</button>
+          <div id="tp-plan-error" style="display:none;margin-top:6px;font-size:12px;color:#f96020;text-align:center">⚠ Only .docx files are supported</div>
+        </div>
+      </div>
+
+      <div id="report-ready-status" style="display:none;margin-top:1.25rem;background:#162348;border-radius:10px;padding:.875rem 1.25rem;border:1.5px solid #4a6ea8;flex-direction:column;gap:.5rem">
+        <div style="font-size:13px;font-weight:500;color:#EEEBD8;margin-bottom:.25rem">Documents ready</div>
+        <div style="display:flex;gap:1.5rem;flex-wrap:wrap">
+          <span id="report-ready-template" style="font-size:13px;color:#4ade80"></span>
+          <span id="report-ready-plan" style="font-size:13px;color:#4ade80"></span>
+        </div>
+      </div>
+      <div id="report-form" style="display:none;margin-top:1.5rem">
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Cover page<span class="rg-toggle">−</span></div>
+          <div class="rg-section-body"><div class="rg-grid">
+            <div class="rg-field"><label>Part description <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_partDescription" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Part number <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_partNumber" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Document ID</label><input type="text" id="rf_docNumber_report" placeholder="e.g. JED01234"></div>
+            <div class="rg-field"><label>Document revision <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_docRev_report" class="tp-filled" readonly></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Author, reviewers &amp; approvers <span class="tp-tag" style="font-size:10px">from TP Plan</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed"><div class="rg-grid">
+            <div class="rg-field"><label>Author name</label><input type="text" id="rf_authorName_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Author position</label><input type="text" id="rf_authorPosition_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Reviewer name</label><input type="text" id="rf_reviewerName_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Reviewer position</label><input type="text" id="rf_reviewerPosition_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Approver (MP) name</label><input type="text" id="rf_approverNameMP_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Approver (MP) position</label><input type="text" id="rf_approverPositionMP_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Approver (QE) name</label><input type="text" id="rf_approverNameQE_report" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Approver (QE) position</label><input type="text" id="rf_approverPositionQE_report" class="tp-filled" readonly></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Joby References <span class="tp-tag" style="font-size:10px">from TP Plan</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed">
+            <div id="rf_jobyRefs_display" style="font-size:13px;color:#9ab8d8">—</div>
+          </div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Joby Parts and Tools <span class="tp-tag" style="font-size:10px">from TP Plan</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed">
+            <div id="rf_jobyParts_display" style="font-size:13px;color:#9ab8d8">—</div>
+          </div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Supplemental File References<span class="rg-toggle">−</span></div>
+          <div class="rg-section-body">
+            <div style="font-size:12px;color:#9ab8d8;margin-bottom:.75rem">List any supplemental files attached to this document in Enovia. One file name per row.</div>
+            <div id="supplemental-files-rows">
+              <div class="supplemental-row" style="display:flex;gap:8px;align-items:center;margin-bottom:6px">
+                <input type="text" placeholder="e.g. RunData_301_1593.csv" style="flex:1;font-size:13px;padding:6px 10px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8;outline:none">
+                <button onclick="removeSupplementalRow(this)" style="font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid #f96020;background:transparent;color:#f96020;cursor:pointer;white-space:nowrap">✕</button>
+              </div>
+            </div>
+            <button onclick="addSupplementalRow()" class="btn btn-secondary" style="margin-top:4px;font-size:12px;padding:5px 14px">+ Add file</button>
+          </div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Scope <span class="tp-tag" style="font-size:10px">from TP Plan</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed"><div class="rg-grid">
+            <div class="rg-field"><label>Part revision <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_partRev" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Tool number <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_toolNumber" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Tool revision <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_toolRev" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Test plan doc ID <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_docNumber_plan" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Test plan revision <span class="tp-tag">from TP Plan</span></label><input type="text" id="rf_docRev_plan" class="tp-filled" readonly></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Cure cycle <span class="tp-tag" style="font-size:10px">from data file &amp; TC input</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed"><div class="rg-grid">
+            <div class="rg-field"><label>Run ID</label><input type="text" id="rf_runID" placeholder="e.g. 301_1593"></div>
+            <div class="rg-field"><label>Cure cycle grade</label><input type="text" id="rf_cureCycle" class="tp-filled" readonly value="A"></div>
+            <div class="rg-field"><label>Process spec number</label><input type="text" id="rf_processSpec" class="tp-filled" readonly value="JPS00001"></div>
+            <div class="rg-field"><label>Process spec</label><input type="text" id="rf_processSpecFull" class="tp-filled" readonly value="Process Specification — Composite Fabrication"></div>
+            <div class="rg-field"><label>Driving TC(s) <span class="tp-tag">from TC input</span></label><input type="text" id="rf_drivingTC" class="tp-filled" readonly></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Analysis — leading &amp; lagging TCs<span class="rg-toggle">−</span></div>
+          <div class="rg-section-body"><div class="rg-grid">
+            <div class="rg-field"><label>Leading part TC — Ramp 1 <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_leadingPartTC_ramp1" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Leading part TC — Ramp 2 <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_leadingPartTC_ramp2" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Lagging part TC — Ramp 1 <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_laggingPartTC_ramp1" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Lagging part TC — Ramp 2 <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_laggingPartTC_ramp2" class="tp-filled" readonly></div>
+            <div class="rg-field rg-full"><label>Part TC comment <span style="font-size:11px;color:#4a6ea8;font-weight:400">(optional)</span></label><input type="text" id="rf_partTC_dataComment" placeholder="e.g. All part TCs remained within tolerance throughout the cure."></div>
+            <div class="rg-field rg-full"><label>Tool TC comment <span style="font-size:11px;color:#4a6ea8;font-weight:400">(optional)</span></label><input type="text" id="rf_toolTC_dataComment" placeholder="e.g. All tool and TPI TCs tracked the part TCs closely."></div>
+            <div class="rg-field rg-full" style="border-top:1px solid #2a3a6e;padding-top:.75rem;margin-top:.25rem">
+              <label style="font-size:12px;font-weight:600;color:#EEEBD8;display:block;margin-bottom:.5rem">Equivalent Leading TC writeup</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.5rem">
+                <div style="flex:1;min-width:180px">
+                  <div style="font-size:11px;color:#9ab8d8;margin-bottom:3px">Leading part TC</div>
+                  <select id="sel_leadingPartTC" onchange="updateEquivLeadingWriteup()" style="width:100%;font-size:13px;padding:5px 8px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8"><option value="">— select —</option></select>
+                </div>
+                <div style="flex:1;min-width:180px">
+                  <div style="font-size:11px;color:#9ab8d8;margin-bottom:3px">Equivalent leading TC</div>
+                  <select id="sel_equivLeadingTC" onchange="updateEquivLeadingWriteup()" style="width:100%;font-size:13px;padding:5px 8px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8"><option value="">— select —</option></select>
+                  <div id="err_equivLeadingTC" style="display:none;font-size:11px;color:#f96020;margin-top:4px">⚠ No qualified equivalent TCs found. Ensure Tool TCs or TPI TCs are assigned in the TC Input tab and pass the leading TC qualification criteria.</div>
+                </div>
+              </div>
+              <div id="prev_equivLeadingWriteup" style="font-size:12px;color:#7ab0e0;background:#0d1e3a;border:1px solid #1e3a6a;border-radius:8px;padding:8px 10px;line-height:1.6;display:none"></div>
+              <input type="hidden" id="rf_equivLeadingTC_writeup">
+            </div>
+            <input type="hidden" id="rf_fig_equivLeadingTC_contentDesc">
+            <div class="rg-field rg-full" style="border-top:1px solid #2a3a6e;padding-top:.75rem;margin-top:.25rem">
+              <label style="font-size:12px;font-weight:600;color:#EEEBD8;display:block;margin-bottom:.5rem">Justification paragraph</label>
+              <div id="prev_justificationLeadingTC" style="font-size:12px;color:#7ab0e0;background:#0d1e3a;border:1px solid #1e3a6a;border-radius:8px;padding:8px 10px;line-height:1.6;display:none"></div>
+              <input type="hidden" id="rf_justificationLeadingTC">
+            </div>
+            <div class="rg-field rg-full" style="border-top:1px solid #2a3a6e;padding-top:.75rem;margin-top:.25rem">
+              <label style="font-size:12px;font-weight:600;color:#EEEBD8;display:block;margin-bottom:.5rem">Equivalent Lagging TC writeup</label>
+              <div style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:.5rem">
+                <div style="flex:1;min-width:180px">
+                  <div style="font-size:11px;color:#9ab8d8;margin-bottom:3px">Lagging part TC</div>
+                  <select id="sel_laggingPartTC" onchange="updateEquivLaggingWriteup()" style="width:100%;font-size:13px;padding:5px 8px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8"><option value="">— select —</option></select>
+                </div>
+                <div style="flex:1;min-width:180px">
+                  <div style="font-size:11px;color:#9ab8d8;margin-bottom:3px">Equivalent lagging TC</div>
+                  <select id="sel_equivLaggingTC" onchange="updateEquivLaggingWriteup()" style="width:100%;font-size:13px;padding:5px 8px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8"><option value="">— select —</option></select>
+                  <div id="err_equivLaggingTC" style="display:none;font-size:11px;color:#f96020;margin-top:4px">⚠ No qualified equivalent TCs found. Ensure Tool TCs or TPI TCs are assigned in the TC Input tab and pass the lagging TC qualification criteria.</div>
+                </div>
+              </div>
+              <div id="prev_equivLaggingWriteup" style="font-size:12px;color:#7ab0e0;background:#0d1e3a;border:1px solid #1e3a6a;border-radius:8px;padding:8px 10px;line-height:1.6;display:none"></div>
+              <input type="hidden" id="rf_equivLaggingTC_writeup">
+            </div>
+            <input type="hidden" id="rf_fig_equivLaggingTC_contentDesc">
+            <div class="rg-field rg-full" style="border-top:1px solid #2a3a6e;padding-top:.75rem;margin-top:.25rem">
+              <label style="font-size:12px;font-weight:600;color:#EEEBD8;display:block;margin-bottom:.5rem">Justification paragraph</label>
+              <div id="prev_justificationLaggingTC" style="font-size:12px;color:#7ab0e0;background:#0d1e3a;border:1px solid #1e3a6a;border-radius:8px;padding:8px 10px;line-height:1.6;display:none"></div>
+              <input type="hidden" id="rf_justificationLaggingTC">
+            </div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Conclusion<span class="rg-toggle">−</span></div>
+          <div class="rg-section-body"><div class="rg-grid">
+            <div class="rg-field rg-full"><label>Leading TC conclusion <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_equivLeadingTC_conclusion" class="tp-filled" readonly></div>
+            <div class="rg-field rg-full"><label>Leading TC install description</label><input type="text" id="rf_equivLeadingTC_InstallDesc" placeholder="Installation location description"></div>
+            <div class="rg-field rg-full"><label>Lagging TC conclusion <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_equivLaggingTC_conclusion" class="tp-filled" readonly></div>
+            <div class="rg-field rg-full"><label>Lagging TC install description</label><input type="text" id="rf_equivLaggingTC_InstallDesc" placeholder="Installation location description"></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Hold data (Appendix A) <span class="tp-tag" style="font-size:10px">from conclusion</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed"><div class="rg-grid">
+            <div class="rg-field"><label>Hold 1 duration (min) <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold1Duration" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 1 start time <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold1StartTime" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 1 start temp (°F) <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold1StartTemp" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 1 end time <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold1EndTime" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 1 end temp (°F) <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold1EndTemp" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 2 duration (min) <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold2Duration" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 2 start time <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold2StartTime" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 2 start temp (°F) <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold2StartTemp" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 2 end time <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold2EndTime" class="tp-filled" readonly></div>
+            <div class="rg-field"><label>Hold 2 end temp (°F) <span class="tp-tag">from conclusion</span></label><input type="text" id="rf_hold2EndTemp" class="tp-filled" readonly></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Tool TC configuration<span class="rg-toggle">−</span></div>
+          <div class="rg-section-body"><div class="rg-grid">
+            <div class="rg-field"><label>Frontside TC count</label><input type="text" id="rf_qtyTC_frontsideTool" placeholder="e.g. 4"></div>
+            <div class="rg-field"><label>Backside TC count (0 if none)</label><input type="text" id="rf_qtyTC_backsideTool" placeholder="e.g. 2"></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Figure descriptions <span class="tp-tag" style="font-size:10px">pre-filled</span><span class="rg-toggle">+</span></div>
+          <div class="rg-section-body collapsed"><div class="rg-grid">
+            <div class="rg-field rg-full"><label>Fig 1-1</label><input type="text" id="rf_fig_reprPart_Desc" class="tp-filled" readonly value="Representative Part"></div>
+            <div class="rg-field rg-full"><label>Fig 1-2</label><input type="text" id="rf_fig_reprMold_Desc" class="tp-filled" readonly value="Representative Mold"></div>
+            <div class="rg-field rg-full"><label>Fig 2-2</label><input type="text" id="rf_fig_ToolTC_Desc" class="tp-filled" readonly value="Tool TC Locations"></div>
+            <div class="rg-field rg-full"><label>Fig 2-3</label><input type="text" id="rf_fig_partTC_1_Desc" class="tp-filled" readonly value="Part TC Locations"></div>
+            <div class="rg-field rg-full"><label>Fig 2-4 (optional)</label><input type="text" id="rf_fig_partTC_2_Desc" class="tp-filled" readonly value="Part TC Locations Pt. 2 (Optional)"></div>
+            <div class="rg-field rg-full"><label>Fig 2-5 (optional)</label><input type="text" id="rf_fig_partTC_3_Desc" class="tp-filled" readonly value="Part TC Locations Pt. 3 (Optional)"></div>
+            <div class="rg-field rg-full"><label>Fig 4-4</label><input type="text" id="rf_fig_justificationLeadingTC_Desc" class="tp-filled" readonly value="Evaluation of Candidate Equivalent Leading TC"></div>
+            <div class="rg-field rg-full"><label>Fig 4-6</label><input type="text" id="rf_fig_justificationLaggingTC_Desc" class="tp-filled" readonly value="Evaluation of Candidate Equivalent Lagging TC"></div>
+          </div></div>
+        </div>
+        <div class="rg-section">
+          <div class="rg-section-title" onclick="toggleSection(this)">Final Report<span class="rg-toggle">−</span></div>
+          <div class="rg-section-body">
+            <div style="display:flex;gap:1rem;align-items:center;flex-wrap:wrap">
+              <div style="font-size:13px;color:#9ab8d8" id="report-grade-label">No template uploaded yet.</div>
+              <button class="btn btn-orange" id="generate-report-btn">Generate Report ↓</button>
+            </div>
+            <div id="report-gen-status" style="font-size:13px;margin-top:.75rem;display:none"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div id="status"></div>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jszip/3.10.1/jszip.min.js"></script>
+<script>
+const PALETTE=['#1a6abf','#f97316','#16a34a','#9333ea','#0891b2','#dc2626','#ca8a04','#0f766e','#c026d3','#4f46e5','#b45309','#be185d'];
+let allRows=[],mfidMap={},dataHeaders=[],dataRows=[],chartInst=null,currentTcs=[];
+let viewStart=0,viewEnd=1,activeFilter='All',hiddenDatasets=new Set(),interactionSetup=false,reportMode=false;
+let compareMode=false,compareChartInst=null,hiddenCompareTcs=new Set();
+let lastCompareTcs=[],lastCompareLabels=[],lastCompareDatasets=[],lastCompareRefLabel='';
+let autoclaveType='large';
+let removeOutliers=false;
+let lastConclusionResult=null;
+let gradeTemplates={a:null};
+let tpPlanData=null;
+let editLockedFields=false;
+let activeGrade=null;
+
+function toggleSection(titleEl){
+  const body=titleEl.nextElementSibling;
+  const toggle=titleEl.querySelector('.rg-toggle');
+  const collapsed=body.classList.toggle('collapsed');
+  toggle.textContent=collapsed?'+':'−';
+}
+
+function clearTemplate(g){
+  gradeTemplates[g]=null;
+  if(activeGrade===g)activeGrade=null;
+  document.getElementById('grade-'+g+'-name').textContent='Click to upload .docx template';
+  document.getElementById('grade-'+g+'-name').style.color='#9ab8d8';
+  document.getElementById('grade-'+g+'-label').style.borderColor='#4a6ea8';
+  document.getElementById('grade-'+g+'-clear').style.display='none';
+  document.getElementById('grade-'+g+'-error').style.display='none';
+  document.getElementById('grade-'+g+'-file').value='';
+  updateGradeLabel();
+  checkShowForm();
+}
+
+function clearTpPlan(){
+  tpPlanData=null;
+  document.getElementById('tp-plan-name').textContent='Click to upload .docx document';
+  document.getElementById('tp-plan-name').style.color='#9ab8d8';
+  document.getElementById('tp-plan-label').style.borderColor='#4a6ea8';
+  document.getElementById('tp-plan-clear').style.display='none';
+  document.getElementById('tp-plan-status').style.display='none';
+  document.getElementById('tp-plan-error').style.display='none';
+  document.getElementById('tp-plan-file').value='';
+  checkShowForm();
+}
+
+function updateGradeLabel(){
+  const lbl=document.getElementById('report-grade-label');
+  if(activeGrade==='a')lbl.textContent='Using Grade A template — ready to generate.';
+  else lbl.textContent='No template uploaded yet.';
+  lbl.style.color=activeGrade?'#7ab0e0':'#9ab8d8';
+}
+
+// Grade A template upload
+['a'].forEach(g=>{
+  const input=document.getElementById('grade-'+g+'-file');
+  const nameEl=document.getElementById('grade-'+g+'-name');
+  const labelEl=document.getElementById('grade-'+g+'-label');
+  const clearBtn=document.getElementById('grade-'+g+'-clear');
+  input.addEventListener('change',e=>{
+    const f=e.target.files[0];if(!f)return;
+    const errEl=document.getElementById('grade-'+g+'-error');
+    if(!f.name.toLowerCase().endsWith('.docx')){
+      errEl.style.display='block';
+      input.value='';return;
+    }
+    errEl.style.display='none';
+    const r=new FileReader();
+    r.onload=async ev=>{
+      try{
+        if(typeof JSZip==='undefined')throw new Error('JSZip not loaded');
+        const zip=await JSZip.loadAsync(ev.target.result);
+        const docFile=zip.file('word/document.xml');
+        if(!docFile){errEl.textContent='⚠ Not a valid .docx file';errEl.style.display='block';input.value='';return;}
+        const xml=await docFile.async('string');
+        // Check for at least 3 known Grade A template fields
+        const knownFields=['partDescription','partNumber','runID','cureCycle','authorName_report','hold1Duration','partTC_dataComment','toolTC_dataComment','ReferencesDocID','DrawingNumber'];
+        const foundCount=knownFields.filter(f=>xml.includes(f)).length;
+        if(foundCount<3){
+          errEl.textContent='⚠ Unrecognized template — please upload the Grade A automation template';
+          errEl.style.display='block';
+          input.value='';return;
+        }
+        gradeTemplates[g]=ev.target.result;
+        activeGrade=g;
+        nameEl.textContent=f.name;nameEl.style.color='#7ab0e0';
+        labelEl.style.borderColor='#1769c8';
+        clearBtn.style.display='block';
+        updateGradeLabel();
+        checkShowForm();
+        // Refresh conclusion analysis so report fields reflect latest TC assignments
+        if(lastConclusionResult){
+          try{
+            const result=runConclusionAnalysis();
+            lastConclusionResult=result;
+            populateReportFromConclusion(result);
+          }catch(e){}
+        }
+      }catch(err){
+        errEl.textContent='⚠ Could not read file: '+err.message;
+        errEl.style.display='block';
+        input.value='';
+      }
+    };
+    r.readAsArrayBuffer(f);
+  });
+});
+
+// Thermal Profile Plan upload — parse filled-in docx for text fields and images
+document.getElementById('tp-plan-file').addEventListener('change',e=>{
+  const f=e.target.files[0];if(!f)return;
+  const errEl=document.getElementById('tp-plan-error');
+  if(!f.name.toLowerCase().endsWith('.docx')){
+    errEl.style.display='block';
+    document.getElementById('tp-plan-file').value='';return;
+  }
+  errEl.style.display='none';
+  const nameEl=document.getElementById('tp-plan-name');
+  const statusEl=document.getElementById('tp-plan-status');
+  const labelEl=document.getElementById('tp-plan-label');
+  nameEl.textContent=f.name;nameEl.style.color='#7ab0e0';
+  labelEl.style.borderColor='#1769c8';
+  const r=new FileReader();
+  r.onload=async ev=>{
+    try{
+      if(typeof JSZip==='undefined')throw new Error('JSZip not loaded');
+      const zip=await JSZip.loadAsync(ev.target.result);
+
+      // Extract text content from document.xml
+      const docXml=await zip.file('word/document.xml').async('string');
+
+      // Initialize tpPlanData now that we have a valid docx
+      tpPlanData={fields:{},images:{},rawXml:docXml};
+
+      // Pull field values: look for patterns like "fieldName }}" near text content
+      // Parse runs: extract text nodes
+      const textNodes=[...docXml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map(m=>m[1]);
+      const fullText=textNodes.join('');
+
+      // Extract image relationships
+      const relsPath='word/_rels/document.xml.rels';
+      const relsFile=zip.file(relsPath);
+      if(relsFile){
+        const relsXml=await relsFile.async('string');
+        const imgRels=[...relsXml.matchAll(/Id="([^"]+)"[^>]*Target="media\/([^"]+)"/g)];
+        for(const [,rId,fname] of imgRels){
+          const imgFile=zip.file('word/media/'+fname);
+          if(imgFile){
+            const imgData=await imgFile.async('base64');
+            const ext=fname.split('.').pop().toLowerCase();
+            const mime=ext==='jpg'||ext==='jpeg'?'image/jpeg':ext==='png'?'image/png':'image/'+ext;
+            tpPlanData.images[rId]={src:'data:'+mime+';base64,'+imgData,fname};
+          }
+        }
+      }
+
+      // Store full plain text for display/reference
+      tpPlanData.rawText=fullText;
+      tpPlanData.fileName=f.name;
+      tpPlanData.imageCount=Object.keys(tpPlanData.images).length;
+
+      document.getElementById('tp-plan-clear').style.display='block';
+      checkShowForm();
+    }catch(err){
+      statusEl.textContent='Error: '+err.message;
+      statusEl.style.color='#f96020';
+      console.error(err);
+    }
+  };
+  r.readAsArrayBuffer(f);
+});
+
+function parseTpPlanFields(){
+  if(!tpPlanData||!tpPlanData.rawXml)return;
+  const xml=tpPlanData.rawXml;
+  // Title is split across multiple <w:t> runs in the raw XML — join tokens up to 'Doc. ID'
+  // Keep all text nodes (including whitespace ones) for reconstruction
+  const allTexts=[...xml.matchAll(/<w:t[^>]*>([^<]*)<\/w:t>/g)].map(m=>m[1]);
+  const trimmed=allTexts.map(t=>t.trim());
+
+  // Reconstruct title by joining tokens before 'Doc. ID'
+  const docLabelIdx=trimmed.findIndex(t=>t.startsWith('Doc. ID'));
+  const titleTokens=allTexts.slice(0,docLabelIdx>=0?docLabelIdx:10).map(t=>t.trim()).filter(Boolean);
+  const fullTitle=titleTokens.join('');
+  // Match: everything after em-dash up to ', P/N XXXXX'
+  const titleMatch=fullTitle.match(/—\s*(.+),\s*P\/N\s*([\w\-]+)/i);
+  if(titleMatch){
+    setTpField('rf_partDescription', titleMatch[1].trim());
+    setTpField('rf_partNumber', titleMatch[2].trim());
+  }
+
+  // Use trimmed array (non-empty only) for label-based lookups
+  const texts=trimmed.filter(Boolean);
+  // Doc ID and Rev — find by label, value is the next token
+  const docIdIdx=texts.findIndex(t=>t.startsWith('Doc. ID'));
+  if(docIdIdx>=0){
+    // Value follows the label but may have a ':' run in between — skip it
+    const val=texts.slice(docIdIdx+1).find(t=>t&&t!==':'&&!t.startsWith('Rev')&&!t.startsWith('FAA'))||'';
+    setTpField('rf_docNumber_plan', val);
+  }
+  const revIdx=texts.findIndex(t=>t.startsWith('Rev.:'));
+  if(revIdx>=0){
+    const val=texts.slice(revIdx+1).find(t=>t&&!t.startsWith('FAA')&&!t.startsWith('Date'))||'';
+    setTpField('rf_docRev_report', val);
+    setTpField('rf_docRev_plan', val);
+  }
+  // Authors: find rows in authors table — search for 'Author' role labels
+  // Pattern: role, name, position triplets after header
+  const authorIdx=texts.findIndex(t=>t==='Author, Reviewer, or Approver');
+  if(authorIdx>=0){
+    const people=[];
+    let i=authorIdx+3; // skip header Name/Position cells
+    while(i+2<texts.length){
+      const role=texts[i];
+      if(!['Author','Reviewer','Approver'].includes(role))break;
+      people.push({role,name:texts[i+1]||'',pos:texts[i+2]||''});
+      i+=3;
+    }
+    const author=people.find(p=>p.role==='Author');
+    const reviewer=people.find(p=>p.role==='Reviewer');
+    const approvers=people.filter(p=>p.role==='Approver');
+    if(author){setTpField('rf_authorName_report',author.name);setTpField('rf_authorPosition_report',author.pos);}
+    if(reviewer){setTpField('rf_reviewerName_report',reviewer.name);setTpField('rf_reviewerPosition_report',reviewer.pos);}
+    if(approvers[0]){setTpField('rf_approverNameMP_report',approvers[0].name);setTpField('rf_approverPositionMP_report',approvers[0].pos);}
+    if(approvers[1]){setTpField('rf_approverNameQE_report',approvers[1].name);setTpField('rf_approverPositionQE_report',approvers[1].pos);}
+  }
+
+  // Joby References table: find the SECOND 'Doc. ID' occurrence (first is the cover page)
+  // Stop when we hit 'Joby Parts' (heading is split) or 'Part Number' (next table header)
+  const allDocIdIdxs=texts.reduce((a,t,i)=>t==='Doc. ID'?[...a,i]:a,[]);
+  const refHdrIdx=allDocIdIdxs.length>=2?allDocIdIdxs[1]:allDocIdIdxs[0]??-1;
+  const jobyRefs=[];
+  if(refHdrIdx>=0){
+    let i=refHdrIdx+3; // skip 'Title' and 'Date or Rev' header cells
+    while(i+2<texts.length){
+      const id=texts[i],title=texts[i+1],rev=texts[i+2];
+      // Stop at any of these sentinel tokens that mark end of the references table
+      if(!id||id==='Joby Parts'||id==='Part Number'||id==='Table of Contents'
+         ||id==='Abbreviations, Acronyms, and Symbols'||id==='°'||id==='degree')break;
+      jobyRefs.push({docID:id,docTitle:title,docRev:rev});
+      i+=3;
+    }
+  }
+  tpPlanData.jobyRefs=jobyRefs;
+
+  // Joby Parts & Tools table: find 'Part Number' that follows 'Joby Parts' (not inside TOC)
+  // The TOC also contains 'Part Number' text so find the one after 'Nomenclature' header
+  const allPNIdxs=texts.reduce((a,t,i)=>t==='Part Number'?[...a,i]:a,[]);
+  // The real table header has 'Nomenclature' immediately after; the TOC entry does not
+  const partsHdrIdx=allPNIdxs.find(i=>texts[i+1]==='Nomenclature')??-1;
+  const jobyParts=[];
+  if(partsHdrIdx>=0){
+    let i=partsHdrIdx+3; // skip 'Nomenclature' and 'Revision' header cells
+    while(i+2<texts.length){
+      const pn=texts[i],desc=texts[i+1],rev=texts[i+2];
+      // Stop at TOC / abbreviations sentinels
+      if(!pn||pn==='Table of Contents'||pn==='Abbreviations, Acronyms, and Symbols'
+         ||pn==='°'||pn==='degree'||pn.length>40)break;
+      jobyParts.push({refTablePN:pn,refTableDesc:desc,refTableRev:rev});
+      i+=3;
+    }
+  }
+  tpPlanData.jobyParts=jobyParts;
+
+  // Extract representative part and tool from the Parts & Tools table
+  // Representative part: match by part number already extracted from the title — unambiguous regardless of row order
+  const repPartPN=(document.getElementById('rf_partNumber')?.value||'').trim();
+  const repPart=jobyParts.find(r=>r.refTablePN===repPartPN)
+    ||jobyParts.find(r=>repPartPN&&r.refTablePN.startsWith(repPartPN.split('-').slice(0,2).join('-')));
+  if(repPart){
+    setTpField('rf_partRev', repPart.refTableRev);
+  }
+
+  // Representative tool: row whose nomenclature contains the rep part's description words
+  // and starts with 'T' (tool number prefix), excluding the TPI (Thermal Profiling Instrument)
+  const repPartDesc=repPart?repPart.refTableDesc.toUpperCase():'';
+  // Key words from part description (skip short words)
+  const partWords=repPartDesc.split(/[\s,]+/).filter(w=>w.length>3);
+  const repTool=jobyParts.find(r=>{
+    if(!/^T\d/i.test(r.refTablePN))return false; // must be a tool number
+    if(/thermal profil/i.test(r.refTableDesc))return false; // skip TPI
+    const desc=r.refTableDesc.toUpperCase();
+    // Must share at least 2 key words with the part description
+    return partWords.filter(w=>desc.includes(w)).length>=2;
+  });
+  if(repTool){
+    setTpField('rf_toolNumber', repTool.refTablePN);
+    setTpField('rf_toolRev', repTool.refTableRev);
+  }
+
+  // Render reference tables in the form
+  renderRefTable('rf_jobyRefs_display',
+    ['Doc. ID','Title','Date or Rev'],
+    jobyRefs.map(r=>[r.docID,r.docTitle,r.docRev]));
+
+  // TC Coordinate table (Table 2-1 in TP Plan: TC Number, X, Y, Z)
+  const tcCoordHdrIdx=texts.findIndex(t=>t==='TC Number'&&texts[texts.indexOf(t)+1]==='X');
+  const tcCoord=[];
+  if(tcCoordHdrIdx>=0){
+    let i=tcCoordHdrIdx+4;
+    while(i+3<texts.length){
+      const num=texts[i],x=texts[i+1],y=texts[i+2],z=texts[i+3];
+      if(!num||num.length>10||isNaN(parseInt(num)))break;
+      tcCoord.push({TC_num:num,xCoord:x,yCoord:y,zCoord:z});
+      i+=4;
+    }
+  }
+  tpPlanData.tcCoord=tcCoord;
+
+  // TC Summary table (TC Number, Location, Estimation, Ply Stacking)
+  const tcSumHdrIdx=texts.findIndex(t=>t==='TC Number'&&texts.slice(texts.indexOf(t)+1,texts.indexOf(t)+4).join('').includes('Location'));
+  const tcSummary=[];
+  if(tcSumHdrIdx>=0){
+    let i=tcSumHdrIdx+4;
+    while(i+3<texts.length){
+      const num=texts[i],loc=texts[i+1],est=texts[i+2],stack=texts[i+3];
+      if(!num||num.length>10||isNaN(parseInt(num)))break;
+      tcSummary.push({TC_num:num,TC_loc:loc,TC_est:est,TC_stack:stack});
+      i+=4;
+    }
+  }
+  tpPlanData.tcSummary=tcSummary;
+  renderRefTable('rf_jobyParts_display',
+    ['Part Number','Nomenclature','Revision'],
+    jobyParts.map(r=>[r.refTablePN,r.refTableDesc,r.refTableRev]));
+
+  // Part Family Equivalency table (partFam): 'Part Number' / 'Description' / 'Tool Number'
+  // Find the header with 'Description' and 'Tool Number' columns (distinct from Nomenclature/Revision)
+  const partFamHdrIdx=texts.reduce((found,t,i)=>{
+    if(found>=0)return found;
+    return(t==='Part Number'&&texts[i+1]==='Description'&&texts[i+2]==='Tool Number')?i:found;
+  },-1);
+  const partFam=[];
+  if(partFamHdrIdx>=0){
+    let i=partFamHdrIdx+3;
+    while(i+2<texts.length){
+      const pn=texts[i],desc=texts[i+1],tool=texts[i+2];
+      if(!pn||pn==='Table of Contents'||pn.length>40)break;
+      partFam.push({partFamPN:pn,partFamDesc:desc,partFamTool:tool});
+      i+=3;
+    }
+  }
+  tpPlanData.partFam=partFam;
+}
+
+function setTpField(id,val){
+  const el=document.getElementById(id);
+  if(el&&val)el.value=val;
+}
+
+function renderRefTable(containerId,headers,rows){
+  const el=document.getElementById(containerId);
+  if(!el)return;
+  if(!rows.length){el.textContent='No data found in TP Plan.';return;}
+  let html=`<table class="rg-ref-table"><thead><tr>${headers.map(h=>`<th>${h}</th>`).join('')}</tr></thead><tbody>`;
+  rows.forEach(row=>{html+=`<tr>${row.map(c=>`<td>${c||''}</td>`).join('')}</tr>`;});
+  html+=`</tbody></table>`;
+  el.innerHTML=html;
+}
+
+document.getElementById('edit-lock-switch').addEventListener('click',()=>{
+  editLockedFields=!editLockedFields;
+  document.getElementById('edit-lock-track').style.background=editLockedFields?'#1769c8':'#2a3a6e';
+  document.getElementById('edit-lock-thumb').style.transform=editLockedFields?'translateX(16px)':'translateX(0)';
+  document.getElementById('edit-lock-thumb').style.background=editLockedFields?'#fff':'#9ab8d8';
+  // Toggle readonly and visual state on all tp-filled inputs
+  document.querySelectorAll('.rg-field input.tp-filled').forEach(inp=>{
+    if(editLockedFields){
+      inp.removeAttribute('readonly');
+      inp.style.borderColor='#f96020';
+      inp.style.background='';
+      inp.style.color='#EEEBD8';
+      inp.style.cursor='text';
+    } else {
+      inp.setAttribute('readonly','');
+      inp.style.borderColor='';
+      inp.style.background='';
+      inp.style.color='';
+      inp.style.cursor='default';
+    }
+  });
+});
+
+function checkShowForm(){
+  const hasTemplate=!!gradeTemplates['a'];
+  const hasPlan=!!tpPlanData;
+  const statusDiv=document.getElementById('report-ready-status');
+  const form=document.getElementById('report-form');
+
+  if(hasTemplate&&hasPlan){
+    statusDiv.style.display='none';
+    parseTpPlanFields();
+    form.style.display='block';
+  } else if(hasTemplate){
+    statusDiv.style.display='flex';
+    document.getElementById('report-ready-template').textContent='✓ Grade A template loaded';
+    document.getElementById('report-ready-plan').textContent='Upload TP Plan to continue';
+    document.getElementById('report-ready-plan').style.color='#9ab8d8';
+    form.style.display='none';
+  } else if(hasPlan){
+    statusDiv.style.display='flex';
+    document.getElementById('report-ready-template').textContent='Upload Grade A template to continue';
+    document.getElementById('report-ready-template').style.color='#9ab8d8';
+    document.getElementById('report-ready-plan').textContent='✓ TP Plan loaded — '+tpPlanData.imageCount+' image'+(tpPlanData.imageCount!==1?'s':'');
+    form.style.display='none';
+  } else {
+    statusDiv.style.display='none';
+    form.style.display='none';
+  }
+}
+
+function addSupplementalRow(){
+  const container=document.getElementById('supplemental-files-rows');
+  const row=document.createElement('div');
+  row.className='supplemental-row';
+  row.style.cssText='display:flex;gap:8px;align-items:center;margin-bottom:6px';
+  row.innerHTML='<input type="text" placeholder="e.g. RunData_301_1593.csv" style="flex:1;font-size:13px;padding:6px 10px;border-radius:8px;border:1.5px solid #4a6ea8;background:#162348;color:#EEEBD8;outline:none"><button onclick="removeSupplementalRow(this)" style="font-size:12px;padding:4px 10px;border-radius:6px;border:1px solid #f96020;background:transparent;color:#f96020;cursor:pointer;white-space:nowrap">✕</button>';
+  container.appendChild(row);
+}
+function removeSupplementalRow(btn){
+  const rows=document.querySelectorAll('.supplemental-row');
+  if(rows.length>1)btn.parentElement.remove();
+  else btn.previousElementSibling.value='';
+}
+function getSupplementalFiles(){
+  return [...document.querySelectorAll('.supplemental-row input')]
+    .map(i=>i.value.trim()).filter(Boolean)
+    .map(f=>({supFile:f}));
+}
+
+function injectDateTBD(xml){
+  // Find the Date cell on the cover page and inject a content control with "TBD"
+  // The cell ends with the "Date: " run followed by </w:p></w:tc>
+  // Only inject if no content control is already present after "Date: "
+  return xml.replace(
+    /(<w:t[^>]*>Date:\s*<\/w:t><\/w:r>)(<\/w:p><\/w:tc>)/,
+    '$1<w:sdt><w:sdtPr><w:tag w:val="Date"/><w:showingPlcHdr/></w:sdtPr><w:sdtContent><w:r><w:t>TBD</w:t></w:r></w:sdtContent></w:sdt>$2'
+  );
+}
+
+function collapseAndReplace(xml,fields){
+  // Expand placeholder rows for the three reference tables
+  xml=xml.replace(/(<w:tr\b[^>]*>)([\s\S]*?)(<\/w:tr>)/g,(match,open,body,close)=>{
+    const text=body.replace(/<[^>]+>/g,'').trim();
+    // Joby References
+    if(text.includes('ReferencesDocID')){
+      const arr=fields.docRefTable_report||[];
+      if(!arr.length)return'';
+      return arr.map(item=>match
+        .replace(/\{\{[\s\S]*?ReferencesDocID[\s\S]*?\}\}/g,(item.docID||'').replace(/&/g,'&amp;'))
+        .replace(/\{\{[\s\S]*?ReferencesTitle[\s\S]*?\}\}/g,(item.docTitle||'').replace(/&/g,'&amp;'))
+        .replace(/\{\{[\s\S]*?ReferencesRev[\s\S]*?\}\}/g,(item.docRev||'').replace(/&/g,'&amp;'))
+      ).join('');
+    }
+    // Joby Parts & Tools
+    if(text.includes('DrawingNumber')){
+      const arr=fields.refTable||[];
+      if(!arr.length)return'';
+      return arr.map(item=>match
+        .replace(/\{\{[\s\S]*?DrawingNumber[\s\S]*?\}\}/g,(item.refTablePN||'').replace(/&/g,'&amp;'))
+        .replace(/\{\{[\s\S]*?DrawingName[\s\S]*?\}\}/g,(item.refTableDesc||'').replace(/&/g,'&amp;'))
+        .replace(/\{\{[\s\S]*?DrawingRev[\s\S]*?\}\}/g,(item.refTableRev||'').replace(/&/g,'&amp;'))
+      ).join('');
+    }
+    // Part Family Equivalency
+    if(text.includes('PartFamPartNumber')||text.includes('PartFamDesc')){
+      const arr=fields.partFam||[];
+      if(!arr.length)return'';
+      return arr.map(item=>match
+        .replace(/\{\{[\s\S]*?PartFamPartNumber[\s\S]*?\}\}/g,(item.partFamPN||'').replace(/&/g,'&amp;'))
+        .replace(/\{\{[\s\S]*?PartFamDesc[\s\S]*?\}\}/g,(item.partFamDesc||'').replace(/&/g,'&amp;'))
+        .replace(/\{\{[\s\S]*?PartFamToolNumber[\s\S]*?\}\}/g,(item.partFamTool||'').replace(/&/g,'&amp;'))
+      ).join('');
+    }
+    // Supplemental Files
+    if(text.includes('Supplemental Files')){
+      const arr=fields.supplementalFilesTable||[];
+      if(!arr.length)return'';
+      return arr.map(item=>match
+        .replace(/\{\{[\s\S]*?Supplemental Files[\s\S]*?\}\}/g,(item.supFile||'').replace(/&/g,'&amp;'))
+      ).join('');
+    }
+    return match;
+  });
+  // Handle single-node {%tr for f in FIELD %} ... {%tr endfor %} loops
+  // These have the markers as complete single <w:t> nodes (not split)
+  xml=xml.replace(/(<w:tr[^>]*>(?:(?!<\/w:tr>)[\s\S])*?\{%tr\s+for\s+f\s+in\s+(\w+)\s*%\}[\s\S]*?<\/w:tr>)([\s\S]*?)(<w:tr[^>]*>(?:(?!<\/w:tr>)[\s\S])*?\{%tr\s+endfor[\s\S]*?%\}[\s\S]*?<\/w:tr>)/g,
+    (match,startRow,fieldName,bodyRows,endRow)=>{
+      const arr=fields[fieldName];
+      if(!Array.isArray(arr)||!arr.length)return'';
+      const templateRow=bodyRows.match(/<w:tr[\s\S]*?<\/w:tr>/)?.[0]||'';
+      if(!templateRow)return'';
+      return arr.map(item=>
+        templateRow.replace(/\{\{[\s\S]*?\}\}/g,ph=>{
+          const key=ph.replace(/<[^>]+>/g,'').replace(/\{\{|\}\}/g,'').trim();
+          const val=item[key.replace(/^f\./,'')]||'';
+          return val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+        })
+      ).join('');
+    });
+  // Standard single-field replacement
+  return xml.replace(/\{\{[\s\S]*?\}\}/g,match=>{
+    const fieldName=match.replace(/<[^>]+>/g,'').replace(/\{\{|\}\}/g,'').trim();
+    if(Object.prototype.hasOwnProperty.call(fields,fieldName)){
+      const val=fields[fieldName]||'';
+      return val.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+    }
+    return match;
+  });
+}
+
+document.getElementById('generate-report-btn').onclick=async()=>{
+  const grade=activeGrade;
+  const statusEl=document.getElementById('report-gen-status');
+  statusEl.style.display='block';
+  if(!grade||!gradeTemplates[grade]){
+    statusEl.style.color='#f96020';
+    statusEl.textContent='No Grade A template uploaded. Please upload a .docx template above.';
+    return;
+  }
+  if(typeof JSZip==='undefined'){
+    statusEl.style.color='#f96020';
+    statusEl.textContent='JSZip library not loaded — please refresh and try again.';
+    return;
+  }
+  statusEl.style.color='#9ab8d8';
+  statusEl.textContent='Generating report…';
+  try{
+    const v=id=>document.getElementById(id)?.value.trim()||'';
+    const fields={
+      partDescription:v('rf_partDescription'),partNumber:v('rf_partNumber'),
+      docNumber_report:v('rf_docNumber_report'),docRev_report:v('rf_docRev_report'),
+      authorName_report:v('rf_authorName_report'),authorPosition_report:v('rf_authorPosition_report'),
+      reviewerName_report:v('rf_reviewerName_report'),reviewerPosition_report:v('rf_reviewerPosition_report'),
+      approverNameMP_report:v('rf_approverNameMP_report'),approverPositionMP_report:v('rf_approverPositionMP_report'),
+      approverNameQE_report:v('rf_approverNameQE_report'),approverPositionQE_report:v('rf_approverPositionQE_report'),
+      partRev:v('rf_partRev'),toolNumber:v('rf_toolNumber'),toolRev:v('rf_toolRev'),
+      docNumber_plan:v('rf_docNumber_plan'),docRev_plan:v('rf_docRev_plan'),
+      runID:v('rf_runID'),cureCycle:v('rf_cureCycle'),
+      processSpec:v('rf_processSpec'),processSpecFull:v('rf_processSpecFull'),drivingTC:v('rf_drivingTC'),
+      leadingPartTC_ramp1:v('rf_leadingPartTC_ramp1'),leadingPartTC_ramp2:v('rf_leadingPartTC_ramp2'),
+      laggingPartTC_ramp1:v('rf_laggingPartTC_ramp1'),laggingPartTC_ramp2:v('rf_laggingPartTC_ramp2'),
+      partTC_dataComment:v('rf_partTC_dataComment'),toolTC_dataComment:v('rf_toolTC_dataComment'),
+      equivLeadingTC_writeup:v('rf_equivLeadingTC_writeup'),fig_equivLeadingTC_contentDesc:v('rf_fig_equivLeadingTC_contentDesc'),justificationLeadingTC:v('rf_justificationLeadingTC'),justifyLeadingTC:!!v('rf_justificationLeadingTC'),
+      equivLaggingTC_writeup:v('rf_equivLaggingTC_writeup'),fig_equivLaggingTC_contentDesc:v('rf_fig_equivLaggingTC_contentDesc'),justificationLaggingTC:v('rf_justificationLaggingTC'),justifyLaggingTC:!!v('rf_justificationLaggingTC'),
+      equivLeadingTC_conclusion:v('rf_equivLeadingTC_conclusion'),equivLeadingTC_InstallDesc:v('rf_equivLeadingTC_InstallDesc'),
+      equivLaggingTC_conclusion:v('rf_equivLaggingTC_conclusion'),equivLaggingTC_InstallDesc:v('rf_equivLaggingTC_InstallDesc'),
+      hold1Duration:v('rf_hold1Duration'),hold1StartTime:v('rf_hold1StartTime'),
+      hold1StartTemp:v('rf_hold1StartTemp'),hold1EndTime:v('rf_hold1EndTime'),hold1EndTemp:v('rf_hold1EndTemp'),
+      hold2Duration:v('rf_hold2Duration'),hold2StartTime:v('rf_hold2StartTime'),
+      hold2StartTemp:v('rf_hold2StartTemp'),hold2EndTime:v('rf_hold2EndTime'),hold2EndTemp:v('rf_hold2EndTemp'),
+      qtyTC_frontsideTool:v('rf_qtyTC_frontsideTool'),qtyTC_backsideTool:v('rf_qtyTC_backsideTool'),
+      fig_reprPart_Desc:v('rf_fig_reprPart_Desc'),fig_reprMold_Desc:v('rf_fig_reprMold_Desc'),
+      fig_ToolTC_Desc:v('rf_fig_ToolTC_Desc'),fig_partTC_1_Desc:v('rf_fig_partTC_1_Desc'),
+      fig_partTC_2_Desc:v('rf_fig_partTC_2_Desc'),fig_partTC_3_Desc:v('rf_fig_partTC_3_Desc'),
+      fig_justificationLeadingTC_Desc:v('rf_fig_justificationLeadingTC_Desc'),
+      fig_justificationLaggingTC_Desc:v('rf_fig_justificationLaggingTC_Desc'),
+    };
+    // Inject reference table arrays from TP Plan
+    if(tpPlanData){
+      fields.docRefTable_report=tpPlanData.jobyRefs||[];
+      fields.refTable=tpPlanData.jobyParts||[];
+      fields.partFam=tpPlanData.partFam||[];
+    }
+    // Supplemental file references
+    fields.supplementalFilesTable=getSupplementalFiles();
+    // TC coordinate and summary tables from TP Plan (populated if available)
+    if(tpPlanData){
+      fields.TC_coord=tpPlanData.tcCoord||[];
+      fields.TC_summary=tpPlanData.tcSummary||[];
+    }
+    console.log('Generate fields check:',{
+      partDescription:fields.partDescription,
+      partNumber:fields.partNumber,
+      docNumber_plan:fields.docNumber_plan,
+      docRev_plan:fields.docRev_plan,
+      tpPlanDataPresent:!!tpPlanData,
+      tpPlanRawXmlLength:tpPlanData?.rawXml?.length||0,
+    });
+    const zip=await JSZip.loadAsync(gradeTemplates[grade]);
+    const xmlPaths=Object.keys(zip.files).filter(p=>/\.xml$/i.test(p)&&(p.startsWith('word/')||p==='docProps/core.xml'));
+    for(const path of xmlPaths){
+      const file=zip.file(path);if(!file)continue;
+      let xml=await file.async('string');
+      // Inject TBD content control into the Date cell on the cover page
+      xml=injectDateTBD(xml);
+      xml=collapseAndReplace(xml,fields);
+      zip.file(path,xml);
+    }
+    const blob=await zip.generateAsync({type:'blob',mimeType:'application/vnd.openxmlformats-officedocument.wordprocessingml.document',compression:'DEFLATE'});
+    const a=document.createElement('a');
+    a.href=URL.createObjectURL(blob);
+    const docID=fields.docNumber_report||'Report';
+    const partDesc=fields.partDescription||'';
+    const partNum=fields.partNumber||'';
+    const safeName=(docID+' Part-Tool Thermal Profile Report'+(partDesc?' — '+partDesc:'')+(partNum?', P/N '+partNum:'')).replace(/[\/\\:*?"<>|]/g,'-');
+    a.download=safeName+'.docx';
+    document.body.appendChild(a);a.click();document.body.removeChild(a);
+    URL.revokeObjectURL(a.href);
+    statusEl.style.color='#16a34a';
+    statusEl.textContent='Report downloaded successfully!';
+  }catch(err){
+    statusEl.style.color='#f96020';
+    statusEl.textContent='Error: '+err.message;
+    console.error(err);
+  }
+};
+
+function resetModes(){
+  reportMode=false;compareMode=false;
+  hiddenDatasets=new Set();hiddenCompareTcs=new Set();
+  lastCompareTcs=[];lastCompareLabels=[];lastCompareDatasets=[];lastCompareRefLabel='';
+  viewStart=0;viewEnd=1;
+  const rBtn=document.getElementById('report-toggle');
+  rBtn.textContent='Report Mode: Off';rBtn.style.background='';rBtn.style.color='';
+  const cBtn=document.getElementById('compare-toggle');
+  cBtn.textContent='Compare Mode: Off';cBtn.style.background='';cBtn.style.color='';cBtn.style.borderColor='';
+  document.getElementById('compare-panel').style.display='none';
+  document.getElementById('compare-chart-wrap').style.display='none';
+  document.getElementById('chart-wrap').style.display='block';
+  if(compareChartInst){compareChartInst.destroy();compareChartInst=null;}
+  if(chartInst){chartInst.destroy();chartInst=null;}
+  document.getElementById('tabs-wrap').style.display='none';
+  document.getElementById('toolbar').style.display='none';
+  document.getElementById('zoom-hint').style.display='none';
+  document.getElementById('filter-bar').style.display='none';
+  resetConclusionPanel();
+  interactionSetup=false;
+  clearTemplate('a');
+  clearTpPlan();
+}
+
+function resetConclusionPanel(){
+  document.getElementById('conclusion-panel').style.display='none';
+  const cclBtn=document.getElementById('conclusion-toggle');
+  cclBtn.textContent='Conclusion: Off';cclBtn.style.background='';cclBtn.style.color='';
+  lastConclusionResult=null;
+  document.getElementById('conclusion-content').innerHTML='<span style="font-size:13px;color:#9ab8d8">Click \"Run Analysis\" to compute leading/lagging TCs and hold data.</span>';
+  document.getElementById('conclusion-status').textContent='';
+  document.getElementById('run-conclusion-btn').style.display='';
+  document.getElementById('conclusion-status').style.display='';
+}
+
+const dz=document.getElementById('drop-zone');
+const fi=document.getElementById('file-input');
+dz.addEventListener('click',()=>fi.click());
+dz.addEventListener('dragover',e=>{e.preventDefault();dz.classList.add('drag')});
+dz.addEventListener('dragleave',()=>dz.classList.remove('drag'));
+dz.addEventListener('drop',e=>{e.preventDefault();dz.classList.remove('drag');if(e.dataTransfer.files[0])loadFile(e.dataTransfer.files[0])});
+fi.addEventListener('change',e=>{if(e.target.files&&e.target.files[0])loadFile(e.target.files[0])});
+
+function setRunIDFromFile(stem){
+  const el=document.getElementById('rf_runID');
+  if(el&&!el.value)el.value=stem;
+}
+
+function loadFile(f){
+  if(!f)return;
+  resetModes();
+  switchTab('input');
+  document.getElementById('status').textContent='Reading file…';
+  const isCsv=/\.(csv|txt|dat)$/i.test(f.name);
+  const r=new FileReader();
+  if(isCsv){
+    r.onload=e=>{
+      try{
+        const text=e.target.result;
+        const delim=text.split('\n')[0].includes('\t')?'\t':',';
+        allRows=text.split('\n').map(line=>{
+          const cols=[];let cur='',inQ=false;
+          for(let i=0;i<line.length;i++){
+            const ch=line[i];
+            if(ch==='"')inQ=!inQ;
+            else if(ch===delim&&!inQ){cols.push(cur.trim());cur='';}
+            else cur+=ch;
+          }
+          cols.push(cur.trim());return cols;
+        }).filter(r=>r.some(c=>c!==''));
+        parseFile();document.getElementById('status').textContent='';
+        // Extract Run ID from filename stem (e.g. "301_1593.csv" → "301_1593")
+        const stem=f.name.replace(/\.[^.]+$/,'');
+        if(stem)setRunIDFromFile(stem);
+      }catch(err){document.getElementById('status').textContent='Error: '+err.message}
+    };
+    r.readAsText(f);
+  } else {
+    r.onload=e=>{
+      try{
+        const wb=XLSX.read(e.target.result,{type:'array'});
+        const ws=wb.Sheets[wb.SheetNames[0]];
+        allRows=XLSX.utils.sheet_to_json(ws,{header:1,defval:''});
+        parseFile();document.getElementById('status').textContent='';
+        // Extract Run ID from filename stem (e.g. "301_1593.csv" → "301_1593")
+        const stem=f.name.replace(/\.[^.]+$/,'');
+        if(stem)setRunIDFromFile(stem);
+      }catch(err){document.getElementById('status').textContent='Error: '+err.message}
+    };
+    r.readAsArrayBuffer(f);
+  }
+}
+
+function detectAutoclaveType(){
+  for(let i=0;i<allRows.length;i++){
+    const first=String(allRows[i][0]||'').trim();
+    if(first==='[CURE CYCLE DATA]')return'large';
+    if(/^PART INDEX/i.test(first))return'medium';
+    if(/^PART INFORMATION/i.test(first))return'medium';
+  }
+  return'large';
+}
+
+function parseFile(){
+  autoclaveType=detectAutoclaveType();
+  document.getElementById('autoclave-type').value=autoclaveType;
+  mfidMap={};dataHeaders=[];dataRows=[];
+  if(autoclaveType==='large')parseLarge();else parseMedium();
+  const mfids=Object.keys(mfidMap);
+  const sel=document.getElementById('mfid-sel');
+  sel.innerHTML=mfids.length?mfids.map(m=>`<option value="${m}">${m}</option>`).join(''):'<option>No MFIDs found</option>';
+  document.getElementById('after-upload').style.display='block';
+}
+
+function parseLarge(){
+  let inData=false,dataHeaderRow=-1;
+  for(let i=0;i<allRows.length;i++){
+    const row=allRows[i];const first=String(row[0]||'').trim();
+    const mfidCell=row.map(c=>String(c).trim()).find(c=>/^MFID-/i.test(c));
+    if(mfidCell){
+      const mi=row.findIndex(c=>String(c).trim().toUpperCase()===mfidCell.toUpperCase());
+      const tcs=row.slice(mi+1).map(c=>String(c).trim()).filter(c=>/^TC\d+$/i.test(c));
+      mfidMap[mfidCell.toUpperCase()]=tcs;
+    }
+    if(first==='[CURE CYCLE DATA]')inData=true;
+    if(inData&&dataHeaderRow===-1&&/^elapsedtime/i.test(first)){dataHeaderRow=i;dataHeaders=row.map(c=>String(c).trim());continue;}
+    if(dataHeaderRow>-1&&i>dataHeaderRow&&first!=='')dataRows.push(row);
+  }
+}
+
+function parseMedium(){
+  let currentMfid=null,dataHeaderRow=-1,unitsRowSkipped=false;
+  for(let i=0;i<allRows.length;i++){
+    const row=allRows[i];
+    const first=String(row[0]||'').trim();
+    const second=String(row[1]||'').trim();
+    if(/^PART INDEX/i.test(first))currentMfid=null;
+    if(/^Part Number:/i.test(first)&&second)currentMfid=second.trim().toUpperCase();
+    if(/^Part TCs:/i.test(first)&&currentMfid){
+      const tcs=row.slice(1).map(c=>String(c).trim()).filter(c=>/^PTC\d+$/i.test(c)).map(c=>c.replace(/^PTC/i,'TC'));
+      if(tcs.length>0)mfidMap[currentMfid]=tcs;
+    }
+    if(/^Time$/i.test(first)&&/^Elapsed$/i.test(second)){
+      dataHeaderRow=i;dataHeaders=row.map(c=>String(c).trim());dataHeaders[1]='ElapsedMins';
+      for(let j=0;j<dataHeaders.length;j++){if(/^PTC(\d+)$/i.test(dataHeaders[j]))dataHeaders[j]=dataHeaders[j].replace(/^PTC/i,'TC');}
+      unitsRowSkipped=false;continue;
+    }
+    if(dataHeaderRow>-1&&!unitsRowSkipped){unitsRowSkipped=true;continue;}
+    if(dataHeaderRow>-1&&unitsRowSkipped&&first!=='')dataRows.push(row);
+  }
+}
+
+function switchTab(t){
+  ['input','analysis','report'].forEach(x=>{
+    document.getElementById('tab-'+x).classList.toggle('active',t===x);
+    document.getElementById('content-'+x).classList.toggle('active',t===x);
+  });
+}
+
+document.getElementById('plot-btn').onclick=()=>{
+  const key=document.getElementById('mfid-sel').value;
+  if(!mfidMap[key])return;
+  viewStart=0;viewEnd=1;hiddenDatasets=new Set();
+  currentTcs=mfidMap[key];
+  renderTable(currentTcs);
+  document.getElementById('tabs-wrap').style.display='block';
+  switchTab('input');
+  resetConclusionPanel();
+  renderChart();setupInteraction();
+
+};
+
+document.getElementById('filter-bar').addEventListener('click',e=>{
+  const btn=e.target.closest('.filter-btn');
+  if(!btn||!btn.dataset.type)return;
+  activeFilter=btn.dataset.type;hiddenDatasets=new Set();
+  document.querySelectorAll('#filter-bar .filter-btn').forEach(b=>b.classList.toggle('active',b===btn));
+  if(currentTcs.length)renderChart();
+});
+
+function renderTable(tcs){
+  document.getElementById('tc-table-body').innerHTML=tcs.map(tc=>`
+    <tr>
+      <td>${tc}</td>
+      <td>
+        <input type="text" placeholder="Enter #" oninput="validateTcInput(this)">
+        <div style="display:none;font-size:11px;color:#f96020;margin-top:2px"></div>
+      </td>
+      <td><select onchange="updateDrivingTC();tryRunConclusionSilent()"><option value="">— select —</option><option>Part TC</option><option>Tool TC</option><option>TPI TC</option></select></td>
+    </tr>`).join('');
+}
+
+function validateTcInput(input){
+  const val=input.value.trim();
+  const err=input.nextElementSibling;
+  if(val!==''&&!/^\d+$/.test(val)){
+    err.textContent='Please input a number';err.style.display='block';
+    updateLegend();populateRefTcDropdown();return;
+  }
+  err.style.display='none';
+  const allInputs=[...document.querySelectorAll('#tc-table-body td:nth-child(2) input')];
+  const vals=allInputs.map(i=>i.value.trim()).filter(v=>v!=='');
+  const dupes=vals.filter((v,i)=>vals.indexOf(v)!==i);
+  allInputs.forEach(i=>{
+    const v=i.value.trim();const e=i.nextElementSibling;
+    if(v!==''&&/^\d+$/.test(v)&&dupes.includes(v)){
+      e.textContent='Duplicate TC # — please use a unique number';e.style.display='block';
+    } else if(e.textContent.startsWith('Duplicate')){e.style.display='none';}
+  });
+  updateLegend();populateRefTcDropdown();updateDrivingTC();tryRunConclusionSilent();
+}
+
+function updateDrivingTC(){
+  const rows=[...document.querySelectorAll('#tc-table-body tr')];
+  const nums=rows
+    .filter(row=>row.cells[2]?.querySelector('select')?.value==='Part TC')
+    .map(row=>row.cells[1]?.querySelector('input')?.value.trim())
+    .filter(v=>/^\d+$/.test(v))
+    .map(Number);
+  if(!nums.length)return;
+  const first='TC'+Math.min(...nums);
+  const last='TC'+Math.max(...nums);
+  const el=document.getElementById('rf_drivingTC');
+  if(el)el.value=first===last?first:first+' through '+last;
+}
+
+function getLabelsMap(){
+  const map={};
+  document.querySelectorAll('#tc-table-body tr').forEach(row=>{
+    const ac=row.cells[0].textContent.trim();
+    const tp=row.cells[1].querySelector('input').value.trim();
+    map[ac]=(tp&&/^\d+$/.test(tp))?'TC'+tp:ac;
+  });
+  return map;
+}
+
+function getTypeMap(){
+  const map={};
+  document.querySelectorAll('#tc-table-body tr').forEach(row=>{
+    const ac=row.cells[0].textContent.trim();
+    map[ac]=row.cells[2].querySelector('select').value;
+  });
+  return map;
+}
+
+function getValidTcs(){
+  const typeMap=getTypeMap();
+  if(activeFilter==='All')return currentTcs.filter(tc=>dataHeaders.includes(tc));
+  return currentTcs.filter(tc=>dataHeaders.includes(tc)&&typeMap[tc]===activeFilter);
+}
+
+function updateLegend(){
+  if(!chartInst)return;
+  const labelsMap=getLabelsMap(),validTcs=getValidTcs();
+  chartInst.data.datasets.forEach((ds,i)=>{if(validTcs[i])ds.label=labelsMap[validTcs[i]]||validTcs[i]});
+  chartInst.update('none');
+}
+
+function getEtIdx(){
+  if(autoclaveType==='medium')return dataHeaders.indexOf('ElapsedMins');
+  return dataHeaders.findIndex(h=>/^elapsedtime/i.test(h));
+}
+
+function fmtTime(v){
+  if(v===''||v==null)return'';
+  if(autoclaveType==='medium'){
+    const n=parseFloat(String(v).replace(/[^\d.\-]/g,''));
+    if(isNaN(n))return String(v);
+    const ts=Math.round(n*60),h=Math.floor(ts/3600),m=Math.floor((ts%3600)/60),s=ts%60;
+    return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  if(typeof v==='number'){
+    const sec=Math.round(v*86400),h=Math.floor(sec/3600),m=Math.floor((sec%3600)/60),s=sec%60;
+    return`${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')}`;
+  }
+  return String(v);
+}
+
+function getColors(){
+  return{ac:reportMode?'#000':'#9ab8d8',gc:reportMode?'rgba(0,0,0,.1)':'rgba(255,255,255,.06)',lc:reportMode?'#000':'#EEEBD8',bg:reportMode?'#fff':'#1e2d5a'};
+}
+
+// Returns dataRows with per-column spike outliers nulled out when toggle is on
+function getActiveRows(){
+  if(!removeOutliers)return dataRows;
+  const n=dataHeaders.length;
+  // For each column build last-good value tracker; null any value that jumps >=30F from prev good
+  const lastGood=new Array(n).fill(null);
+  return dataRows.map(row=>{
+    const cleaned=[...row];
+    for(let ci=0;ci<n;ci++){
+      const raw=row[ci];
+      const v=typeof raw==='number'?raw:parseFloat(String(raw??'').replace(/[^\d.\-]/g,''));
+      if(isNaN(v)){lastGood[ci]=null;continue;}
+      if(lastGood[ci]!==null&&Math.abs(v-lastGood[ci])>=30){
+        cleaned[ci]=null; // spike — null it out, do NOT update lastGood so next point re-anchors
+      } else {
+        lastGood[ci]=v;
+      }
+    }
+    return cleaned;
+  });
+}
+
+document.getElementById('outlier-toggle-wrap').addEventListener('click',()=>{
+  removeOutliers=!removeOutliers;
+  document.getElementById('outlier-track').style.background=removeOutliers?'#1769c8':'#2a3a6e';
+  document.getElementById('outlier-thumb').style.transform=removeOutliers?'translateX(16px)':'translateX(0)';
+  document.getElementById('outlier-thumb').style.background=removeOutliers?'#fff':'#9ab8d8';
+  if(currentTcs.length)renderChart();
+  // Re-plot compare if active
+  if(compareMode&&lastCompareTcs.length){
+    document.getElementById('compare-plot-btn').click();
+  }
+});
+
+function renderChart(){
+  const etIdx=getEtIdx();if(etIdx===-1)return;
+  const validTcs=getValidTcs(),labelsMap=getLabelsMap();
+  const activeRows=getActiveRows();
+  const total=activeRows.length,s=Math.max(0,Math.floor(viewStart*total)),e=Math.min(total,Math.ceil(viewEnd*total));
+  const visRows=activeRows.slice(s,e),labels=visRows.map(r=>fmtTime(r[etIdx]));
+  const datasets=validTcs.map((tc,i)=>{
+    const idx=dataHeaders.indexOf(tc);
+    const vals=visRows.map(r=>{const v=String(r[idx]??'').replace(/[^\d.\-]/g,'');const n=parseFloat(v);return isNaN(n)?null:n;});
+    return{label:labelsMap[tc]||tc,data:vals,hidden:hiddenDatasets.has(tc),borderColor:PALETTE[i%PALETTE.length],backgroundColor:PALETTE[i%PALETTE.length]+'22',pointRadius:0,pointHitRadius:10,borderWidth:1.5,tension:.3,spanGaps:true};
+  });
+  if(chartInst){chartInst.destroy();chartInst=null;}
+  const{ac,gc,lc,bg}=getColors();
+  const canvas=document.getElementById('myChart');canvas.style.background=bg;
+  chartInst=new Chart(canvas,{type:'line',data:{labels,datasets},options:{
+    responsive:true,maintainAspectRatio:false,animation:{duration:100},
+    plugins:{
+      legend:{display:true,position:'right',labels:{boxWidth:12,boxHeight:12,borderRadius:2,padding:10,font:{size:11},color:lc,
+        generateLabels(chart){return chart.data.datasets.map((ds,i)=>({text:ds.label,fillStyle:hiddenDatasets.has(validTcs[i])?'transparent':ds.borderColor,strokeStyle:ds.borderColor,lineWidth:hiddenDatasets.has(validTcs[i])?2:0,fontColor:lc,color:lc,hidden:false,datasetIndex:i}));}
+      },onClick(ev,item){const tc=validTcs[item.datasetIndex];if(hiddenDatasets.has(tc))hiddenDatasets.delete(tc);else hiddenDatasets.add(tc);renderChart();}},
+      tooltip:{mode:'nearest',intersect:false,callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y!=null?c.parsed.y.toFixed(1)+'°F':'–'}`}}
+    },
+    scales:{
+      x:{title:{display:true,text:'Elapsed time',font:{size:12,weight:'bold'},color:ac},ticks:{maxTicksLimit:12,autoSkip:true,font:{size:11},color:ac},grid:{color:gc},border:{color:ac}},
+      y:{title:{display:true,text:'Temperature (°F)',font:{size:12,weight:'bold'},color:ac},ticks:{font:{size:11},color:ac,callback:v=>v.toFixed(0)},grid:{color:gc},border:{color:ac}}
+    }
+  }});
+  document.getElementById('filter-bar').style.display='flex';
+  document.getElementById('zoom-hint').style.display='block';
+  document.getElementById('toolbar').style.display='flex';
+}
+
+function renderCompareChart(compareTcs,labels,datasets,refLabel){
+  if(compareChartInst){compareChartInst.destroy();compareChartInst=null;}
+  const{ac,gc,lc,bg}=getColors();
+  const updatedDatasets=datasets.map((ds,i)=>({...ds,hidden:hiddenCompareTcs.has(compareTcs[i])}));
+  const canvas=document.getElementById('compareChart');canvas.style.background=bg;
+  compareChartInst=new Chart(canvas,{type:'line',data:{labels,datasets:updatedDatasets},options:{
+    responsive:true,maintainAspectRatio:false,animation:{duration:100},
+    plugins:{
+      title:{display:true,text:'Temperature Difference from Reference TC ('+refLabel+')',color:lc,font:{size:13,weight:'bold'},padding:{top:8,bottom:8}},
+      legend:{display:true,position:'right',labels:{boxWidth:12,boxHeight:12,borderRadius:2,padding:8,font:{size:10},color:lc,
+        generateLabels(chart){return chart.data.datasets.map((ds,i)=>({text:ds.label,fillStyle:hiddenCompareTcs.has(compareTcs[i])?'transparent':ds.borderColor,strokeStyle:ds.borderColor,lineWidth:hiddenCompareTcs.has(compareTcs[i])?2:0,fontColor:lc,color:lc,hidden:false,datasetIndex:i}));}
+      },onClick(ev,item){const tc=compareTcs[item.datasetIndex];if(hiddenCompareTcs.has(tc))hiddenCompareTcs.delete(tc);else hiddenCompareTcs.add(tc);renderCompareChart(compareTcs,labels,datasets,refLabel);}},
+      tooltip:{mode:'nearest',intersect:false,callbacks:{label:c=>`${c.dataset.label}: ${c.parsed.y!=null?c.parsed.y.toFixed(2)+'°F':'–'}`}}
+    },
+    scales:{
+      x:{title:{display:true,text:'Elapsed time',font:{size:12,weight:'bold'},color:ac},ticks:{maxTicksLimit:12,autoSkip:true,font:{size:11},color:ac},grid:{color:gc},border:{color:ac}},
+      y:{title:{display:true,text:'Deviation (°F)',font:{size:12,weight:'bold'},color:ac},ticks:{font:{size:11},color:ac,callback:v=>v.toFixed(1)},grid:{color:gc},border:{color:ac}}
+    }
+  }});
+}
+
+function setupInteraction(){
+  if(interactionSetup)return;interactionSetup=true;
+  const wrap=document.getElementById('chart-wrap'),box=document.getElementById('select-box');
+  wrap.addEventListener('wheel',e=>{
+    e.preventDefault();
+    const span=viewEnd-viewStart,factor=e.deltaY>0?1.15:0.87;
+    const newSpan=Math.min(1,Math.max(0.02,span*factor)),mid=(viewStart+viewEnd)/2;
+    viewStart=Math.max(0,mid-newSpan/2);viewEnd=Math.min(1,viewStart+newSpan);
+    if(viewEnd>1){viewEnd=1;viewStart=Math.max(0,1-newSpan);}renderChart();
+  },{passive:false});
+  const getArea=()=>chartInst?chartInst.chartArea:null;
+  let isDragging=false,startX=null;
+  wrap.addEventListener('mousedown',e=>{
+    const area=getArea();if(!area)return;
+    const rect=wrap.getBoundingClientRect(),rawX=e.clientX-rect.left;
+    if(rawX<area.left||rawX>area.right)return;
+    isDragging=true;startX=Math.min(Math.max(rawX,area.left),area.right);
+    box.style.left=startX+'px';box.style.width='0';box.style.top=area.top+'px';box.style.height=(area.bottom-area.top)+'px';
+    box.style.display='block';e.preventDefault();
+  });
+  window.addEventListener('mousemove',e=>{
+    if(!isDragging)return;const area=getArea();if(!area)return;
+    const rect=wrap.getBoundingClientRect(),curX=Math.min(Math.max(e.clientX-rect.left,area.left),area.right);
+    box.style.left=Math.min(startX,curX)+'px';box.style.width=Math.abs(curX-startX)+'px';
+  });
+  window.addEventListener('mouseup',e=>{
+    if(!isDragging)return;isDragging=false;box.style.display='none';
+    const area=getArea();if(!area)return;
+    const rect=wrap.getBoundingClientRect(),curX=Math.min(Math.max(e.clientX-rect.left,area.left),area.right);
+    const areaW=area.right-area.left,left=(Math.min(startX,curX)-area.left)/areaW,right=(Math.max(startX,curX)-area.left)/areaW;
+    if(right-left<0.01)return;
+    const span=viewEnd-viewStart;
+    viewStart=Math.max(0,viewStart+left*span);viewEnd=Math.min(1,viewStart+(right-left)*span);renderChart();
+  });
+}
+
+document.getElementById('z-reset').onclick=()=>{viewStart=0;viewEnd=1;if(currentTcs.length)renderChart()};
+
+document.getElementById('compare-toggle').onclick=()=>{
+  compareMode=!compareMode;
+  const btn=document.getElementById('compare-toggle');
+  btn.textContent='Compare Mode: '+(compareMode?'On':'Off');
+  btn.style.background=compareMode?'#fff':'';btn.style.color=compareMode?'#1a2a4a':'';btn.style.borderColor=compareMode?'#4a6ea8':'';
+  document.getElementById('compare-panel').style.display=compareMode?'block':'none';
+  if(!compareMode){
+    document.getElementById('compare-chart-wrap').style.display='none';
+    document.getElementById('chart-wrap').style.display='block';
+    if(compareChartInst){compareChartInst.destroy();compareChartInst=null;}
+  }
+  populateRefTcDropdown();
+};
+
+function populateRefTcDropdown(){
+  const sel=document.getElementById('ref-tc-sel'),prev=sel.value;sel.innerHTML='';
+  document.querySelectorAll('#tc-table-body tr').forEach(row=>{
+    const ac=row.cells[0].textContent.trim(),tp=row.cells[1].querySelector('input').value.trim();
+    if(tp&&/^\d+$/.test(tp)){const opt=document.createElement('option');opt.value=ac;opt.textContent='TC'+tp;sel.appendChild(opt);}
+  });
+  if(prev)sel.value=prev;
+  if(!sel.options.length){const opt=document.createElement('option');opt.textContent='No TP TC # assigned yet';opt.disabled=true;sel.appendChild(opt);}
+}
+
+function onCmpBtn(btn){
+  const val=btn.dataset.cmp,allBtns=[...document.querySelectorAll('[data-cmp]')];
+  if(val==='custom'){allBtns.forEach(b=>b.classList.remove('active'));btn.classList.add('active');document.getElementById('compare-custom-wrap').style.display='block';}
+  else if(val==='All TCs'){allBtns.forEach(b=>b.classList.remove('active'));allBtns.filter(b=>b.dataset.cmp!=='custom').forEach(b=>b.classList.add('active'));document.getElementById('compare-custom-wrap').style.display='none';}
+  else{
+    document.querySelector('[data-cmp="custom"]').classList.remove('active');document.getElementById('compare-custom-wrap').style.display='none';
+    btn.classList.toggle('active');
+    const grp=allBtns.filter(b=>b.dataset.cmp!=='All TCs'&&b.dataset.cmp!=='custom');
+    document.querySelector('[data-cmp="All TCs"]').classList.toggle('active',grp.every(b=>b.classList.contains('active')));
+  }
+}
+
+function getSelectedCmpGroups(){
+  const sel=[...document.querySelectorAll('[data-cmp].active')].map(b=>b.dataset.cmp);
+  if(sel.includes('custom'))return{type:'custom'};
+  return{type:'group',groups:sel.filter(s=>s!=='All TCs')};
+}
+
+document.getElementById('compare-plot-btn').onclick=()=>{
+  const refTc=document.getElementById('ref-tc-sel').value;if(!refTc)return;
+  const etIdx=getEtIdx(),refIdx=dataHeaders.indexOf(refTc);if(refIdx===-1)return;
+  const tpToAc={};
+  document.querySelectorAll('#tc-table-body tr').forEach(row=>{
+    const ac=row.cells[0].textContent.trim(),tp=row.cells[1].querySelector('input').value.trim();
+    if(tp&&/^\d+$/.test(tp))tpToAc['TC'+tp]=ac;
+  });
+  const cmpSel=getSelectedCmpGroups();let compareTcs=[];
+  document.getElementById('custom-tc-error').style.display='none';
+  if(cmpSel.type==='group'){
+    const typeMap=getTypeMap();
+    compareTcs=!cmpSel.groups.length
+      ?currentTcs.filter(tc=>dataHeaders.includes(tc)&&tc!==refTc)
+      :currentTcs.filter(tc=>dataHeaders.includes(tc)&&tc!==refTc&&cmpSel.groups.includes(typeMap[tc]));
+  } else {
+    const entries=document.getElementById('custom-tc-input').value.split(',').map(s=>s.trim()).filter(Boolean);
+    const invalid=[];
+    entries.forEach(entry=>{
+      const key=entry.toUpperCase().startsWith('TC')?entry.toUpperCase():'TC'+entry;
+      const ac=tpToAc[key];
+      if(!ac||!dataHeaders.includes(ac))invalid.push(entry);
+      else if(ac!==refTc)compareTcs.push(ac);
+    });
+    if(invalid.length){const el=document.getElementById('custom-tc-error');el.textContent='Not found: '+invalid.join(', ');el.style.display='block';if(!compareTcs.length)return;}
+  }
+  if(!compareTcs.length)return;
+  const labelsMap=getLabelsMap(),refLabel=labelsMap[refTc]||refTc;
+  const activeRows=getActiveRows();
+  const total=activeRows.length,s=Math.max(0,Math.floor(viewStart*total)),en=Math.min(total,Math.ceil(viewEnd*total));
+  const visRows=activeRows.slice(s,en),labels=visRows.map(r=>fmtTime(r[etIdx]));
+  const datasets=compareTcs.map((tc,i)=>{
+    const idx=dataHeaders.indexOf(tc);
+    const vals=visRows.map(r=>{
+      const rv=parseFloat(String(r[refIdx]??'').replace(/[^\d.\-]/g,'')),cv=parseFloat(String(r[idx]??'').replace(/[^\d.\-]/g,''));
+      return(isNaN(rv)||isNaN(cv))?null:parseFloat((cv-rv).toFixed(2));
+    });
+    return{label:labelsMap[tc]||tc,data:vals,borderColor:PALETTE[i%PALETTE.length],backgroundColor:PALETTE[i%PALETTE.length]+'22',pointRadius:0,pointHitRadius:10,borderWidth:1.5,tension:.3,spanGaps:true};
+  });
+  lastCompareTcs=compareTcs;lastCompareLabels=labels;lastCompareDatasets=datasets;lastCompareRefLabel=refLabel;
+  hiddenCompareTcs=new Set();
+  document.getElementById('chart-wrap').style.display='none';
+  document.getElementById('compare-chart-wrap').style.display='block';
+  renderCompareChart(compareTcs,labels,datasets,refLabel);
+};
+
+document.getElementById('report-toggle').onclick=()=>{
+  reportMode=!reportMode;
+  const btn=document.getElementById('report-toggle');
+  btn.textContent='Report Mode: '+(reportMode?'On':'Off');
+  btn.style.background=reportMode?'#fff':'';btn.style.color=reportMode?'#1a2a4a':'';
+  if(chartInst){chartInst.destroy();chartInst=null;renderChart();}
+  if(compareChartInst&&lastCompareTcs.length)renderCompareChart(lastCompareTcs,lastCompareLabels,lastCompareDatasets,lastCompareRefLabel);
+};
+
+document.getElementById('conclusion-toggle').onclick=()=>{
+  const panel=document.getElementById('conclusion-panel');
+  const btn=document.getElementById('conclusion-toggle');
+  const visible=panel.style.display!=='none';
+  panel.style.display=visible?'none':'block';
+  btn.textContent='Conclusion: '+(visible?'Off':'On');
+  btn.style.background=visible?'':'#fff';btn.style.color=visible?'':'#1a2a4a';
+  // Run analysis eagerly on open if not already done
+  if(!visible&&!lastConclusionResult){
+    tryRunConclusion();
+  }
+};
+
+document.getElementById('run-conclusion-btn').onclick=()=>tryRunConclusion();
+
+function tryRunConclusionSilent(){
+  // Re-run silently whenever TC assignments change; populate report fields
+  if(!currentTcs.length)return;
+  try{
+    const result=runConclusionAnalysis();
+    lastConclusionResult=result;
+    populateReportFromConclusion(result);
+    // If conclusion panel is open, re-render it too
+    if(document.getElementById('conclusion-panel').style.display!=='none'){
+      renderConclusion(result);
+    }
+  }catch(e){}
+}
+
+function tryRunConclusion(){
+  const status=document.getElementById('conclusion-status');
+  const btn=document.getElementById('run-conclusion-btn');
+  try{
+    const result=runConclusionAnalysis();
+    lastConclusionResult=result;
+    renderConclusion(result);
+    populateReportFromConclusion(result);
+    status.textContent='';
+    btn.style.display='none';
+    status.style.display='none';
+  }catch(e){
+    status.textContent='Error: '+e.message;
+    console.error(e);
+  }
+}
+
+function populateLeadingLaggingDropdowns(result){
+  if(!result)return;
+  const labelsMap=result.labelsMap||{};
+  const typeMap=getTypeMap();
+  const label=tc=>labelsMap[tc]||tc;
+  const tcType=tc=>{
+    const t=typeMap[tc]||'';
+    return t==='Tool TC'?'tool TC':t==='TPI TC'?'TPI TC':t==='Part TC'?'part TC':'TC';
+  };
+
+  // Leading part TC dropdown — from ramp results
+  const leadSel=document.getElementById('sel_leadingPartTC');
+  const prevLeadVal=leadSel.value;
+  leadSel.innerHTML='<option value="">— select —</option>';
+  if(result.rampResults){
+    const seen=new Set();
+    result.rampResults.forEach(r=>{
+      if(r.leadTC&&!seen.has(r.leadTC)){
+        seen.add(r.leadTC);
+        const o=document.createElement('option');o.value=r.leadTC;o.textContent=label(r.leadTC);leadSel.appendChild(o);
+      }
+    });
+  }
+  if(prevLeadVal)leadSel.value=prevLeadVal;
+  if(!leadSel.value&&leadSel.options.length>1)leadSel.selectedIndex=1;
+
+  // Equivalent leading TC dropdown — from leadCandidates qualified list
+  const equivSel=document.getElementById('sel_equivLeadingTC');
+  const prevEquivVal=equivSel.value;
+  equivSel.innerHTML='<option value="">— select —</option>';
+  const leadQualified=result.leadCandidates?.qualified||[];
+  leadQualified.forEach(c=>{
+    const o=document.createElement('option');o.value=c.tc;o.textContent=c.label;equivSel.appendChild(o);
+  });
+  const errLead=document.getElementById('err_equivLeadingTC');
+  if(errLead)errLead.style.display=leadQualified.length===0?'block':'none';
+  if(prevEquivVal)equivSel.value=prevEquivVal;
+  if(!equivSel.value&&equivSel.options.length>1)equivSel.selectedIndex=1;
+
+  updateEquivLeadingWriteup();
+
+  // Lagging part TC dropdown — from ramp results
+  const lagSel=document.getElementById('sel_laggingPartTC');
+  const prevLagVal=lagSel.value;
+  lagSel.innerHTML='<option value="">— select —</option>';
+  if(result.rampResults){
+    const seen=new Set();
+    result.rampResults.forEach(r=>{
+      if(r.lagTC&&!seen.has(r.lagTC)){
+        seen.add(r.lagTC);
+        const o=document.createElement('option');o.value=r.lagTC;o.textContent=label(r.lagTC);lagSel.appendChild(o);
+      }
+    });
+  }
+  if(prevLagVal)lagSel.value=prevLagVal;
+  if(!lagSel.value&&lagSel.options.length>1)lagSel.selectedIndex=1;
+
+  // Equivalent lagging TC dropdown — from lagCandidates qualified list
+  const equivLagSel=document.getElementById('sel_equivLaggingTC');
+  const prevEquivLagVal=equivLagSel.value;
+  equivLagSel.innerHTML='<option value="">— select —</option>';
+  const lagQualified=result.lagCandidates?.qualified||[];
+  lagQualified.forEach(c=>{
+    const o=document.createElement('option');o.value=c.tc;o.textContent=c.label;equivLagSel.appendChild(o);
+  });
+  const errLag=document.getElementById('err_equivLaggingTC');
+  if(errLag)errLag.style.display=lagQualified.length===0?'block':'none';
+  if(prevEquivLagVal)equivLagSel.value=prevEquivLagVal;
+  if(!equivLagSel.value&&equivLagSel.options.length>1)equivLagSel.selectedIndex=1;
+
+  updateEquivLaggingWriteup();
+}
+
+function updateEquivLeadingWriteup(){
+  const result=lastConclusionResult;if(!result)return;
+  const labelsMap=result.labelsMap||{};
+  const typeMap=getTypeMap();
+  const label=tc=>labelsMap[tc]||tc;
+
+  const leadTC=document.getElementById('sel_leadingPartTC').value;
+  const equivTC=document.getElementById('sel_equivLeadingTC').value;
+  const prevEl=document.getElementById('prev_equivLeadingWriteup');
+  const hiddenEl=document.getElementById('rf_equivLeadingTC_writeup');
+  const prevJustEl=document.getElementById('prev_justificationLeadingTC');
+  const hiddenJustEl=document.getElementById('rf_justificationLeadingTC');
+  const descEl=document.getElementById('rf_fig_equivLeadingTC_contentDesc');
+
+  if(!leadTC||!equivTC){
+    prevEl.style.display='none';if(hiddenEl)hiddenEl.value='';
+    prevJustEl.style.display='none';if(hiddenJustEl)hiddenJustEl.value='';
+    return;
+  }
+
+  const leadLabel=label(leadTC);
+  const equivLabel=label(equivTC);
+  const type=typeMap[equivTC]||'';
+  const typeStr=type==='Tool TC'?'tool thermocouple':type==='TPI TC'?'TPI thermocouple':'thermocouple';
+
+  // Main writeup paragraph (equivLeadingTC_writeup)
+  // Template already has hardcoded "Figure 4-3 plots the temperature of [fig_equivLeadingTC_contentDesc]"
+  // so writeup is the opening sentence only; the "Figure 4-3..." sentence is appended for preview only
+  const writeup=`${leadLabel} is the most leading part TC throughout the cure cycle. A viable option in production to capture the part and tool’s leading thermal behavior is ${equivLabel} during dwell 1 and 2 of the cure. ${equivLabel} is a ${typeStr} that provides a valid trace to the leading part TC during stage 1 and stage 2.`;
+
+  // Preview shows full paragraph including the Figure 4-3 sentence (bold in preview)
+  prevEl.innerHTML=writeup+' <strong>Figure 4‑3</strong> plots the temperature of '+leadLabel+' and '+equivLabel+'.';
+  prevEl.style.display='block';
+  if(hiddenEl)hiddenEl.value=writeup;
+
+  // fig_equivLeadingTC_contentDesc — always auto-filled (hidden)
+  if(descEl)descEl.value=leadLabel+' and '+equivLabel;
+
+
+
+  // Figure 4-4 justification paragraph (justificationLeadingTC)
+  // Get temp diff from the qualified candidate data
+  const candidate=result.leadCandidates?.qualified?.find(c=>c.tc===equivTC);
+  let tempDiffStr='±5°F'; // fallback
+  if(candidate){
+    const maxLead=candidate.maxAbove!=null?Math.abs(candidate.maxAbove):null;
+    const maxLag=candidate.maxBelow!=null?Math.abs(candidate.maxBelow):null;
+    const worst=Math.max(maxLead??0,maxLag??0);
+    if(worst>0)tempDiffStr='±'+worst.toFixed(1)+'°F';
+  }
+
+  // Compute ramp rate difference over ramp segments
+  let rampRateStr='5°F/min'; // fallback
+  if(result.rampResults&&result.rampResults.length&&dataRows.length){
+    const etIdx=getEtIdx();
+    const leadIdx=dataHeaders.indexOf(leadTC);
+    const equivIdx=dataHeaders.indexOf(equivTC);
+    if(etIdx>=0&&leadIdx>=0&&equivIdx>=0){
+      // Sample ramp rate diff at a few points across ramp segments
+      // Use simple endpoint delta over ramp 1
+      const rampSeg=result._rampSegs?.[0];
+      if(rampSeg){
+        const s=rampSeg.start,e=rampSeg.end;
+        const dt=autoclaveType==='medium'
+          ?(parseFloat(String(dataRows[e][etIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][etIdx]).replace(/[^\d.\-]/g,'')))
+          :(parseFloat(String(dataRows[e][etIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][etIdx]).replace(/[^\d.\-]/g,'')))*1440;
+        const dLeadTemp=parseFloat(String(dataRows[e][leadIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][leadIdx]).replace(/[^\d.\-]/g,''));
+        const dEquivTemp=parseFloat(String(dataRows[e][equivIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][equivIdx]).replace(/[^\d.\-]/g,''));
+        if(dt>0){
+          const rrLead=dLeadTemp/dt,rrEquiv=dEquivTemp/dt;
+          const rrDiff=Math.abs(rrLead-rrEquiv);
+          if(!isNaN(rrDiff)&&rrDiff<20)rampRateStr=rrDiff.toFixed(2)+'°F/min';
+        }
+      }
+    }
+  }
+
+  const justParagraph=`illustrates temperature and temperature ramp rate differences between ${leadLabel} and ${equivLabel}. The temperature difference remains within ${tempDiffStr} throughout the cure cycle and the ramp rate remains within ${rampRateStr}.`;
+
+  // Preview with formatting cues
+  prevJustEl.innerHTML='<em>Per Qualification Requirements for Composite Fabrication (JED00142)</em>, the equivalent leading tool TC must be equal to or lead the most leading part TC. <strong>Figure 4‑4</strong> '+justParagraph;
+  prevJustEl.style.display='block';
+  // The hidden field stores only the portion after "Figure 4-4" since the template hardcodes that prefix
+  if(hiddenJustEl)hiddenJustEl.value=justParagraph;
+}
+
+function updateEquivLaggingWriteup(){
+  const result=lastConclusionResult;if(!result)return;
+  const labelsMap=result.labelsMap||{};
+  const typeMap=getTypeMap();
+  const label=tc=>labelsMap[tc]||tc;
+
+  const lagTC=document.getElementById('sel_laggingPartTC').value;
+  const equivTC=document.getElementById('sel_equivLaggingTC').value;
+  const prevEl=document.getElementById('prev_equivLaggingWriteup');
+  const hiddenEl=document.getElementById('rf_equivLaggingTC_writeup');
+  const prevJustEl=document.getElementById('prev_justificationLaggingTC');
+  const hiddenJustEl=document.getElementById('rf_justificationLaggingTC');
+  const descEl=document.getElementById('rf_fig_equivLaggingTC_contentDesc');
+
+  if(!lagTC||!equivTC){
+    prevEl.style.display='none';if(hiddenEl)hiddenEl.value='';
+    prevJustEl.style.display='none';if(hiddenJustEl)hiddenJustEl.value='';
+    return;
+  }
+
+  const lagLabel=label(lagTC);
+  const equivLabel=label(equivTC);
+  const type=typeMap[equivTC]||'';
+  const typeStr=type==='Tool TC'?'tool thermocouple':type==='TPI TC'?'TPI thermocouple':'thermocouple';
+
+  const writeup=`${lagLabel} is the most lagging part TC throughout the cure cycle. A viable option in production to capture the part and tool’s lagging thermal behavior is ${equivLabel} during dwell 1 and 2 of the cure. ${equivLabel} is a ${typeStr} that provides a valid trace to the lagging part TC during stage 1 and stage 2.`;
+
+  prevEl.innerHTML=writeup+' <strong>Figure 4‑5</strong> plots the temperature of '+lagLabel+' and '+equivLabel+'.';
+  prevEl.style.display='block';
+  if(hiddenEl)hiddenEl.value=writeup;
+  if(descEl)descEl.value=lagLabel+' and '+equivLabel;
+
+
+
+  // Justification paragraph
+  const candidate=result.lagCandidates?.qualified?.find(c=>c.tc===equivTC);
+  let tempDiffStr='±5°F';
+  if(candidate){
+    const maxLead=candidate.maxAbove!=null?Math.abs(candidate.maxAbove):null;
+    const maxLag=candidate.maxBelow!=null?Math.abs(candidate.maxBelow):null;
+    const worst=Math.max(maxLead??0,maxLag??0);
+    if(worst>0)tempDiffStr='±'+worst.toFixed(1)+'°F';
+  }
+
+  let rampRateStr='5°F/min';
+  if(result.rampResults&&result.rampResults.length&&dataRows.length){
+    const etIdx=getEtIdx();
+    const lagIdx=dataHeaders.indexOf(lagTC);
+    const equivIdx=dataHeaders.indexOf(equivTC);
+    if(etIdx>=0&&lagIdx>=0&&equivIdx>=0){
+      const rampSeg=result._rampSegs?.[0];
+      if(rampSeg){
+        const s=rampSeg.start,e=rampSeg.end;
+        const dt=autoclaveType==='medium'
+          ?(parseFloat(String(dataRows[e][etIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][etIdx]).replace(/[^\d.\-]/g,'')))
+          :(parseFloat(String(dataRows[e][etIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][etIdx]).replace(/[^\d.\-]/g,'')))*1440;
+        const dLagTemp=parseFloat(String(dataRows[e][lagIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][lagIdx]).replace(/[^\d.\-]/g,''));
+        const dEquivTemp=parseFloat(String(dataRows[e][equivIdx]).replace(/[^\d.\-]/g,''))-parseFloat(String(dataRows[s][equivIdx]).replace(/[^\d.\-]/g,''));
+        if(dt>0){
+          const rrLag=dLagTemp/dt,rrEquiv=dEquivTemp/dt;
+          const rrDiff=Math.abs(rrLag-rrEquiv);
+          if(!isNaN(rrDiff)&&rrDiff<20)rampRateStr=rrDiff.toFixed(2)+'°F/min';
+        }
+      }
+    }
+  }
+
+  const justParagraph=`illustrates temperature and temperature ramp rate differences between ${lagLabel} and ${equivLabel}. The temperature difference remains within ${tempDiffStr} throughout the cure cycle and the ramp rate remains within ${rampRateStr}.`;
+
+  prevJustEl.innerHTML='<em>Per Qualification Requirements for Composite Fabrication (JED00142)</em>, the equivalent lagging tool TC must be equal to or lag the most lagging part TC. <strong>Figure 4‑6</strong> '+justParagraph;
+  prevJustEl.style.display='block';
+  if(hiddenJustEl)hiddenJustEl.value=justParagraph;
+}
+
+function populateReportFromConclusion(result){
+  if(!result||!result.rampResults)return;
+  const labelsMap=result.labelsMap||{};
+  const label=tc=>labelsMap[tc]||tc;
+  const r0=result.rampResults[0],r1=result.rampResults[1];
+  const setF=(id,val)=>{const el=document.getElementById(id);if(el&&val)el.value=val;};
+  if(r0){
+    setF('rf_leadingPartTC_ramp1', r0.leadTC?label(r0.leadTC):'');
+    setF('rf_laggingPartTC_ramp1', r0.lagTC?label(r0.lagTC):'');
+  }
+  if(r1){
+    setF('rf_leadingPartTC_ramp2', r1.leadTC?label(r1.leadTC):'');
+    setF('rf_laggingPartTC_ramp2', r1.lagTC?label(r1.lagTC):'');
+  }
+  populateLeadingLaggingDropdowns(result);
+
+  // Hold data from conclusion holdResults
+  const setF2=(id,val)=>{const el=document.getElementById(id);if(el)el.value=val||'';};
+  const h0=result.holdResults?.[0],h1=result.holdResults?.[1];
+  if(h0){
+    setF2('rf_hold1Duration',h0.duration);
+    setF2('rf_hold1StartTime',h0.startTime);
+    setF2('rf_hold1StartTemp',h0.startTemp);
+    setF2('rf_hold1EndTime',h0.endTime);
+    setF2('rf_hold1EndTemp',h0.endTemp);
+  }
+  if(h1){
+    setF2('rf_hold2Duration',h1.duration);
+    setF2('rf_hold2StartTime',h1.startTime);
+    setF2('rf_hold2StartTemp',h1.startTemp);
+    setF2('rf_hold2EndTime',h1.endTime);
+    setF2('rf_hold2EndTemp',h1.endTemp);
+  }
+
+  // Conclusion — leading and lagging TC conclusion sentences
+  const labelsMap2=result.labelsMap||{};
+  const label2=tc=>labelsMap2[tc]||tc;
+  const r0c=result.rampResults?.[0];
+  if(r0c){
+    if(r0c.leadTC){
+      const lbl=label2(r0c.leadTC);
+      setF2('rf_equivLeadingTC_conclusion',`The leading TC was identified as ${lbl} during the cure. During production of the part:`);
+    }
+    if(r0c.lagTC){
+      const lbl=label2(r0c.lagTC);
+      setF2('rf_equivLaggingTC_conclusion',`The lagging TC was identified as ${lbl} during the cure. During production of the part:`);
+    }
+  }
+}
+
+function getPartTCs(){
+  // Returns array of AC TC column names that are typed as "Part TC"
+  const typeMap=getTypeMap();
+  return currentTcs.filter(tc=>dataHeaders.includes(tc)&&typeMap[tc]==='Part TC');
+}
+
+function runConclusionAnalysis(){
+  const etIdx=getEtIdx();
+  if(etIdx===-1)throw new Error('No elapsed time column found.');
+  const partTCs=getPartTCs();
+  if(partTCs.length<2)throw new Error('Please assign at least 2 TCs as "Part TC" in the TC # Input tab first.');
+
+  // Build per-row numeric data for part TCs + elapsed time
+  const tcIdxs=partTCs.map(tc=>dataHeaders.indexOf(tc));
+  const rows=getActiveRows().map(r=>{
+    const t=parseFloat(String(r[etIdx]).replace(/[^\d.\-]/g,''));
+    const vals=tcIdxs.map(i=>{const v=parseFloat(String(r[i]??'').replace(/[^\d.\-]/g,''));return isNaN(v)?null:v;});
+    return{t:isNaN(t)?null:t,vals};
+  }).filter(r=>r.t!==null&&r.vals.some(v=>v!==null));
+
+  if(rows.length<10)throw new Error('Not enough data rows to analyze.');
+
+  // Detect ramps and holds using a smoothed average TC temperature
+  // Smooth over a 5-point window, then classify each row as ramp-up / hold / cool
+  const W=5;
+  const avgTemps=rows.map((_,i)=>{
+    const start=Math.max(0,i-W),end=Math.min(rows.length-1,i+W);
+    let sum=0,cnt=0;
+    for(let j=start;j<=end;j++){
+      rows[j].vals.forEach(v=>{if(v!==null){sum+=v;cnt++;}});
+    }
+    return cnt?sum/cnt:null;
+  });
+
+  // Label each row: 'ramp-up', 'hold', 'cool', 'idle'
+  // Rate in °F/min: use 10-row window
+  const RATE_WIN=10,RAMP_THRESH=0.3,HOLD_TOL=5;
+  const rates=avgTemps.map((_,i)=>{
+    const i0=Math.max(0,i-RATE_WIN/2),i1=Math.min(avgTemps.length-1,i+RATE_WIN/2);
+    const t0=rows[i0].t,t1=rows[i1].t,temp0=avgTemps[i0],temp1=avgTemps[i1];
+    if(t0===null||t1===null||temp0===null||temp1===null||t1===t0)return 0;
+    // elapsed time units: large = fractional day (×1440 for mins), medium = already mins
+    const dtMins=autoclaveType==='medium'?(t1-t0):(t1-t0)*1440;
+    return dtMins>0?(temp1-temp0)/dtMins:0;
+  });
+
+  const labels=rates.map(r=>r>RAMP_THRESH?'ramp-up':r<-RAMP_THRESH?'cool':'hold');
+
+  // Merge contiguous segments, filter noise (min segment length)
+  const MIN_RAMP=20,MIN_HOLD=15;
+  const segs=[];
+  let cur={type:labels[0],start:0};
+  for(let i=1;i<labels.length;i++){
+    if(labels[i]!==cur.type){segs.push({...cur,end:i-1});cur={type:labels[i],start:i};}
+  }
+  segs.push({...cur,end:labels.length-1});
+
+  // Keep only significant ramp-up and hold segments
+  const rampSegs=segs.filter(s=>s.type==='ramp-up'&&(s.end-s.start+1)>=MIN_RAMP);
+  const holdSegs=segs.filter(s=>s.type==='hold'&&(s.end-s.start+1)>=MIN_HOLD);
+
+  const labelsMap=getLabelsMap();
+  const tcLabel=tc=>labelsMap[tc]||tc;
+
+  // For each ramp: leading = highest temp most often, lagging = lowest temp most often
+  function analyzeRamp(seg,idx){
+    const n=partTCs.length;
+    // Count how many time points each TC is the highest and lowest among all Part TCs
+    const highCount=new Array(n).fill(0);
+    const lowCount=new Array(n).fill(0);
+    let scoredPoints=0;
+
+    for(let i=seg.start;i<=seg.end;i++){
+      const vals=partTCs.map((_,ti)=>rows[i].vals[ti]);
+      const valid=vals.map((v,ti)=>({v,ti})).filter(x=>x.v!==null);
+      if(valid.length<2)continue; // skip rows where fewer than 2 TCs have data
+      scoredPoints++;
+      const maxV=Math.max(...valid.map(x=>x.v));
+      const minV=Math.min(...valid.map(x=>x.v));
+      // Award all TCs tied for highest / lowest (handles exact ties)
+      valid.forEach(x=>{
+        if(x.v===maxV)highCount[x.ti]++;
+        if(x.v===minV)lowCount[x.ti]++;
+      });
+    }
+
+    if(scoredPoints===0)return null;
+
+    const leadTCti=highCount.indexOf(Math.max(...highCount));
+    const lagTCti=lowCount.indexOf(Math.max(...lowCount));
+    const leadTC=partTCs[leadTCti];
+    const lagTC=partTCs[lagTCti];
+
+    return{
+      label:'Ramp '+(idx+1),
+      leadTC,lagTC,
+      leadLabel:tcLabel(leadTC),
+      lagLabel:tcLabel(lagTC),
+      leadPct:((highCount[leadTCti]/scoredPoints)*100).toFixed(0),
+      lagPct:((lowCount[lagTCti]/scoredPoints)*100).toFixed(0),
+      scoredPoints,
+    };
+  }
+
+  // For each hold: find the lagging TC's hold start/end time & temp
+  // Also match hold to which ramp it follows
+  function analyzeHold(seg,holdIdx,rampResults){
+    // Lagging TC from the preceding ramp
+    const lagTC=rampResults[holdIdx]?rampResults[holdIdx].lagTC:null;
+    const lagTCti=lagTC?partTCs.indexOf(lagTC):-1;
+
+    const startRow=rows[seg.start],endRow=rows[seg.end];
+
+    function getTC(row,ti){
+      if(ti<0)return null;
+      const v=row.vals[ti];return isNaN(v)?null:v;
+    }
+
+    const startTime=fmtTime(startRow.t);
+    const endTime=fmtTime(endRow.t);
+    const startTemp=lagTCti>=0?getTC(startRow,lagTCti):null;
+    const endTemp=lagTCti>=0?getTC(endRow,lagTCti):null;
+
+    // Duration in minutes
+    const dtMins=autoclaveType==='medium'
+      ?(endRow.t-startRow.t)
+      :(endRow.t-startRow.t)*1440;
+
+    return{
+      label:'Hold '+(holdIdx+1),
+      lagTC,lagLabel:lagTC?tcLabel(lagTC):'N/A',
+      startTime,endTime,
+      startTemp:startTemp!==null?startTemp.toFixed(1):'–',
+      endTemp:endTemp!==null?endTemp.toFixed(1):'–',
+      duration:dtMins.toFixed(0),
+    };
+  }
+
+  const rampResults=rampSegs.slice(0,2).map((seg,i)=>analyzeRamp(seg,i));
+  const holdResults=holdSegs.slice(0,2).map((seg,i)=>analyzeHold(seg,i,rampResults));
+
+  // ── Equivalent TC candidates (Tool TC + TPI TC) ──────────────────────────
+  function getToolTpiTCs(){
+    const typeMap=getTypeMap();
+    return currentTcs.filter(tc=>dataHeaders.includes(tc)&&(typeMap[tc]==='Tool TC'||typeMap[tc]==='TPI TC'));
+  }
+
+  function avgDiffOverRamps(candidateIdx, refIdx, rampSegsSlice){
+    // Returns avg (candidate - ref) across all ramp points where both have data
+    let sum=0, cnt=0;
+    rampSegsSlice.forEach(seg=>{
+      for(let i=seg.start;i<=seg.end;i++){
+        const cv=rows[i].vals[candidateIdx];
+        const rv=rows[i].vals[refIdx];
+        if(cv!==null&&rv!==null){sum+=(cv-rv);cnt++;}
+      }
+    });
+    return cnt>0?sum/cnt:null;
+  }
+
+  function maxDiffOverRamps(candidateIdx, refIdx, rampSegsSlice){
+    // Returns {maxAbove, maxBelow} — worst-case exceedances vs ref
+    let maxAbove=-Infinity, maxBelow=Infinity;
+    rampSegsSlice.forEach(seg=>{
+      for(let i=seg.start;i<=seg.end;i++){
+        const cv=rows[i].vals[candidateIdx];
+        const rv=rows[i].vals[refIdx];
+        if(cv!==null&&rv!==null){
+          const diff=cv-rv;
+          if(diff>maxAbove)maxAbove=diff;
+          if(diff<maxBelow)maxBelow=diff;
+        }
+      }
+    });
+    return{maxAbove:maxAbove===-Infinity?null:maxAbove, maxBelow:maxBelow===Infinity?null:maxBelow};
+  }
+
+  const toolTpiTCs=getToolTpiTCs();
+  const allTCsForCandidates=[...partTCs,...toolTpiTCs];
+
+  // Build index arrays into rows[i].vals for tool/TPI TCs
+  // We need to extend rows to include tool/TPI TC values
+  const candidateTCIdxs=toolTpiTCs.map(tc=>dataHeaders.indexOf(tc));
+
+  // Re-build rows with candidate TC values appended
+  const candidateRows=getActiveRows().map(r=>{
+    return{vals:candidateTCIdxs.map(i=>{const v=parseFloat(String(r[i]??'').replace(/[^\d.\-]/g,''));return isNaN(v)?null:v;})};
+  }).filter((_,i)=>rows[i]); // align with filtered rows
+
+  // For each ramp, compute per-candidate avg diff and disqualification flags
+  function analyzeCandidatesForRef(refTC, refRole, rampSegsSlice){
+    // refRole: 'leading' or 'lagging'
+    const refPartIdx=partTCs.indexOf(refTC);
+    if(refPartIdx===-1)return[];
+
+    const results=[];
+    toolTpiTCs.forEach((tc,ci)=>{
+      let sumDiff=0,cntPts=0,disqualReason=null;
+      let maxAbove=-Infinity,maxBelow=Infinity;
+
+      rampSegsSlice.forEach(seg=>{
+        for(let i=seg.start;i<=seg.end;i++){
+          const rv=rows[i].vals[refPartIdx];
+          const cv=candidateRows[i]?candidateRows[i].vals[ci]:null;
+          if(rv===null||cv===null)continue;
+          const diff=cv-rv; // positive = candidate leads ref
+          sumDiff+=diff;cntPts++;
+          if(diff>maxAbove)maxAbove=diff;
+          if(diff<maxBelow)maxBelow=diff;
+        }
+      });
+
+      if(cntPts===0){disqualReason='No overlapping data';results.push({tc,label:tcLabel(tc),avgDiff:null,disqualReason});return;}
+
+      const avgDiff=sumDiff/cntPts;
+      // maxAbove = how far candidate leads ref (positive = candidate hotter)
+      // maxBelow = how far candidate lags ref (negative = candidate cooler)
+
+      if(refRole==='leading'){
+        // Disqualify if candidate lags ref by >5°F at any point (maxBelow < -5)
+        if(maxBelow<-5)disqualReason=`Lags leading TC by up to ${Math.abs(maxBelow).toFixed(1)}°F (>5°F limit)`;
+        // Disqualify if candidate leads ref by >15°F at any point (maxAbove > 15)
+        else if(maxAbove>15)disqualReason=`Leads leading TC by up to ${maxAbove.toFixed(1)}°F (>15°F limit)`;
+      } else {
+        // Lagging ref: disqualify if candidate leads ref by >5°F (maxAbove > 5)
+        if(maxAbove>5)disqualReason=`Leads lagging TC by up to ${maxAbove.toFixed(1)}°F (>5°F limit)`;
+        // Disqualify if candidate lags ref by >15°F (maxBelow < -15)
+        else if(maxBelow<-15)disqualReason=`Lags lagging TC by up to ${Math.abs(maxBelow).toFixed(1)}°F (>15°F limit)`;
+      }
+
+      results.push({tc,label:tcLabel(tc),avgDiff,disqualReason,maxAbove,maxBelow});
+    });
+
+    // Sort qualifiers by |avgDiff| ascending, then pick top 3-4
+    const qualified=results.filter(r=>!r.disqualReason).sort((a,b)=>Math.abs(a.avgDiff)-Math.abs(b.avgDiff));
+    const disqualified=results.filter(r=>r.disqualReason);
+    return{qualified:qualified.slice(0,4),disqualified};
+  }
+
+  let leadCandidates=null,lagCandidates=null;
+  if(toolTpiTCs.length>0&&rampResults.length>0){
+    const leadTC=rampResults[0]?.leadTC;
+    const lagTC=rampResults[0]?.lagTC;
+    if(leadTC)leadCandidates=analyzeCandidatesForRef(leadTC,'leading',rampSegs.slice(0,2));
+    if(lagTC)lagCandidates=analyzeCandidatesForRef(lagTC,'lagging',rampSegs.slice(0,2));
+  }
+
+  return{rampResults,holdResults,partTCCount:partTCs.length,labelsMap,leadCandidates,lagCandidates,hasToolTpiTCs:toolTpiTCs.length>0,_rampSegs:rampSegs};
+}
+
+function renderConclusion(result){
+  const {rampResults,holdResults,partTCCount}=result;
+  const el=document.getElementById('conclusion-content');
+
+  if(!rampResults.length&&!holdResults.length){
+    el.innerHTML='<span style="font-size:13px;color:#9ab8d8">No ramp or hold segments detected. Ensure Part TCs are assigned and data has clear ramp/hold phases.</span>';
+    return;
+  }
+
+  let html='';
+
+  // Leading / Lagging summary table
+  html+=`<div class="conc-section">
+    <div class="conc-title">
+      Leading &amp; Lagging Part TC by Ramp
+    </div>
+    <table class="conc-table">
+      <thead><tr><th></th>${rampResults.map(r=>`<th>${r.label}</th>`).join('')}</tr></thead>
+      <tbody>
+        <tr>
+          <td style="color:#9ab8d8;font-weight:500">Leading TC</td>
+          ${rampResults.map(r=>`<td style="color:#4ade80;font-weight:600">${r.leadLabel}</td>`).join('')}
+        </tr>
+        <tr>
+          <td style="color:#9ab8d8;font-weight:500">Lagging TC</td>
+          ${rampResults.map(r=>`<td style="color:#fb923c;font-weight:600">${r.lagLabel}</td>`).join('')}
+        </tr>
+      </tbody>
+    </table>
+    <div class="conc-warn">Leading TC = highest temperature at the most time points · Lagging TC = lowest temperature at the most time points</div>
+  </div>`;
+
+  holdResults.forEach((h,i)=>{
+    const lagLabel=h.lagLabel;
+    const tableId=`A-${i+1}`;
+    const tableTitle=`${h.label} TC Data`;
+    html+=`<div class="conc-section">
+      <div class="conc-title">Table ${tableId}: ${tableTitle} — Lagging TC: <span style="color:#fb923c">${lagLabel}</span></div>
+      <table class="conc-table">
+        <thead><tr><th></th><th>Time (hh:mm:ss)</th><th>${lagLabel} (°F)</th></tr></thead>
+        <tbody>
+          <tr><td style="color:#9ab8d8;font-weight:500">Hold Start</td><td>${h.startTime}</td><td>${h.startTemp}</td></tr>
+          <tr><td style="color:#9ab8d8;font-weight:500">Hold End</td><td>${h.endTime}</td><td>${h.endTemp}</td></tr>
+        </tbody>
+      </table>
+      <div style="font-size:12px;color:#9ab8d8;margin-top:4px">Hold duration: <strong style="color:#EEEBD8">${h.duration} min</strong></div>
+    </div>`;
+  });
+
+  if(!holdResults.length){
+    html+=`<div class="conc-warn">No hold/dwell segments detected. Verify the data contains flat temperature plateaus.</div>`;
+  }
+
+  // ── Equivalent TC candidates section ──────────────────────────────────────
+  if(!result.hasToolTpiTCs){
+    html+=`<div class="conc-section"><div class="conc-warn" style="color:#9ab8d8">Assign TCs as "Tool TC" or "TPI TC" in the TC # Input tab to see equivalent TC candidates.</div></div>`;
+  } else {
+
+    function renderCandidateTable(candidateData, refRole, refLabel){
+      if(!candidateData)return`<div class="conc-warn">Could not determine ${refRole} TC reference.</div>`;
+      const {qualified, disqualified}=candidateData;
+      const roleColor=refRole==='leading'?'#4ade80':'#fb923c';
+      let t=`<div class="conc-title">Equivalent ${refRole==='leading'?'Leading':'Lagging'} TC Candidates: <span style="color:${roleColor};text-transform:none;letter-spacing:0">${refLabel}</span></div>`;
+
+      if(qualified.length===0){
+        t+=`<div class="conc-warn">No Tool/TPI TCs passed the qualification criteria for the ${refRole} TC.</div>`;
+      } else {
+        t+=`<table class="conc-table"><thead><tr>
+          <th>TC</th><th>Avg Diff vs Ref (°F)</th><th>Max Lead (°F)</th><th>Max Lag (°F)</th>
+        </tr></thead><tbody>`;
+        qualified.forEach(c=>{
+          const diffStr=c.avgDiff!==null?(c.avgDiff>=0?'+':'')+c.avgDiff.toFixed(2):'–';
+          const maxLeadStr=c.maxAbove!=null?'+'+c.maxAbove.toFixed(1):'–';
+          const maxLagStr=c.maxBelow!=null?c.maxBelow.toFixed(1):'–';
+          t+=`<tr>
+            <td><strong>${c.label}</strong></td>
+            <td style="color:${c.avgDiff>=0?'#4ade80':'#fb923c'}">${diffStr}</td>
+            <td style="color:#9ab8d8">${maxLeadStr}</td>
+            <td style="color:#9ab8d8">${maxLagStr}</td>
+          </tr>`;
+        });
+        t+=`</tbody></table>`;
+      }
+
+      if(disqualified.length>0){
+        t+=`<details style="margin-top:.5rem"><summary style="font-size:12px;color:#9ab8d8;cursor:pointer">${disqualified.length} TC${disqualified.length>1?'s':''} disqualified</summary>
+        <table class="conc-table" style="margin-top:.4rem"><thead><tr><th>TC</th><th>Reason</th></tr></thead><tbody>`;
+        disqualified.forEach(c=>{
+          t+=`<tr><td>${c.label}</td><td style="color:#f96020;font-size:12px">${c.disqualReason}</td></tr>`;
+        });
+        t+=`</tbody></table></details>`;
+      }
+      return t;
+    }
+
+    const leadRefLabel=rampResults[0]?.leadLabel||'N/A';
+    const lagRefLabel=rampResults[0]?.lagLabel||'N/A';
+
+    html+=`<div style="border-top:1px solid #2a3a6e;margin:1rem 0 1.25rem"></div>`;
+    html+=`<div class="conc-section">${renderCandidateTable(result.leadCandidates,'leading',leadRefLabel)}</div>`;
+    html+=`<div class="conc-section">${renderCandidateTable(result.lagCandidates,'lagging',lagRefLabel)}</div>`;
+  }
+
+  el.innerHTML=html;
+}
+
+document.getElementById('export-btn').onclick=()=>{
+  const activeChart=compareChartInst||chartInst;if(!activeChart)return;
+  const{bg}=getColors();
+  const tmp=document.createElement('canvas');tmp.width=activeChart.canvas.width;tmp.height=activeChart.canvas.height;
+  const ctx=tmp.getContext('2d');ctx.fillStyle=bg;ctx.fillRect(0,0,tmp.width,tmp.height);ctx.drawImage(activeChart.canvas,0,0);
+  const a=document.createElement('a');a.href=tmp.toDataURL('image/png');a.download='thermal_profile.png';document.body.appendChild(a);a.click();document.body.removeChild(a);
+};
+</script>
