@@ -1,0 +1,664 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Composites Manufacturing</title>
+<style>
+  :root {
+    --joby-blue:        #0961FE;
+    --joby-blue-dark:   #0040B0;
+    --joby-cream:       #F0EAD6;
+    --joby-cream-soft:  #F5F1E4;
+    --joby-ink:         #0A0A0A;
+    --joby-ink-soft:    #2A2A2A;
+    --joby-muted:       #6B6B6B;
+    --joby-line:        rgba(10, 10, 10, 0.10);
+    --joby-line-soft:   rgba(10, 10, 10, 0.06);
+    --joby-white:       #FFFFFF;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  html, body {
+    background: var(--joby-cream);
+    color: var(--joby-ink);
+    font-family: -apple-system, BlinkMacSystemFont, "Inter", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 400;
+    line-height: 1.5;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.01em;
+    overflow-x: hidden;
+  }
+
+  nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 20px 48px;
+    background: rgba(240, 234, 214, 0.92);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    border-bottom: 1px solid var(--joby-line-soft);
+  }
+  .brand {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    font-weight: 500;
+    font-size: 16px;
+    color: var(--joby-ink);
+  }
+  .brand-mark { width: 30px; height: 20px; color: var(--joby-ink); }
+  .nav-links {
+    display: flex; gap: 36px;
+    font-size: 14px;
+    color: var(--joby-ink);
+  }
+  .nav-links span { cursor: default; opacity: 0.6; transition: opacity 0.2s; }
+  .nav-links span:hover { opacity: 1; }
+  .nav-cta {
+    font-size: 13px;
+    padding: 8px 18px;
+    background: var(--joby-ink);
+    color: var(--joby-cream);
+    border-radius: 999px;
+    cursor: default;
+  }
+
+  /* ── Hero with real S4 photo ──────────────────────────── */
+  .hero {
+    min-height: 100vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    padding-top: 64px;
+  }
+  .hero-text {
+    padding: 80px 64px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    background: var(--joby-cream);
+    position: relative;
+  }
+  .eyebrow {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    font-size: 13px;
+    color: var(--joby-ink);
+    margin-bottom: 40px;
+    opacity: 0.7;
+  }
+  .eyebrow-num { font-weight: 500; }
+  .hero-text h1 {
+    font-size: clamp(56px, 6.5vw, 104px);
+    line-height: 0.96;
+    letter-spacing: -0.035em;
+    font-weight: 500;
+    color: var(--joby-ink);
+    margin-bottom: 32px;
+  }
+  .hero-text p {
+    font-size: 17px;
+    color: var(--joby-ink-soft);
+    max-width: 440px;
+    line-height: 1.55;
+    margin-bottom: 48px;
+  }
+
+  #arena {
+    position: relative;
+    height: 96px;
+    max-width: 480px;
+    overflow: visible;
+  }
+  #target {
+    position: absolute;
+    left: 0; top: 50%;
+    transform: translateY(-50%);
+    padding: 18px 40px;
+    font-size: 16px;
+    font-weight: 500;
+    font-family: inherit;
+    color: var(--joby-cream);
+    background: var(--joby-blue);
+    border: none;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: left 0.18s cubic-bezier(0.34, 1.2, 0.64, 1),
+                top 0.18s cubic-bezier(0.34, 1.2, 0.64, 1);
+    z-index: 3;
+    white-space: nowrap;
+    letter-spacing: -0.005em;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  #target:hover { background: var(--joby-blue-dark); }
+  #target svg { width: 14px; height: 14px; }
+
+  .hero-message {
+    margin-top: 32px;
+    font-size: 14px;
+    color: var(--joby-muted);
+    font-style: italic;
+    min-height: 22px;
+    transition: opacity 0.25s;
+    max-width: 520px;
+  }
+
+  .hero-image {
+    position: relative;
+    overflow: hidden;
+    background: #1a1a1a;
+  }
+  .hero-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .hero-image-caption {
+    position: absolute;
+    bottom: 32px; left: 32px;
+    z-index: 2;
+    color: var(--joby-cream);
+  }
+  .hero-image-eyebrow {
+    font-size: 12px;
+    opacity: 0.85;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .hero-image-title {
+    font-size: 22px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+  .hero-image::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 50%, rgba(0,0,0,0.5) 100%);
+    pointer-events: none;
+  }
+
+  /* ── Full-bleed carbon fiber section ───────────────────── */
+  .section-image {
+    height: 80vh;
+    min-height: 600px;
+    background: var(--joby-ink);
+    position: relative;
+    overflow: hidden;
+  }
+  .section-image img {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+  .section-image-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.2) 0%, rgba(0,0,0,0.7) 100%);
+  }
+  .section-image-content {
+    position: absolute;
+    bottom: 64px; left: 64px; right: 64px;
+    color: var(--joby-cream);
+    z-index: 2;
+    display: flex;
+    justify-content: space-between;
+    align-items: end;
+    gap: 48px;
+  }
+  .section-image-content .eyebrow { color: var(--joby-cream); opacity: 0.85; margin-bottom: 16px; }
+  .section-image-content h2 {
+    font-size: clamp(40px, 5vw, 72px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    max-width: 700px;
+  }
+  .section-image-stats {
+    display: flex;
+    gap: 48px;
+    text-align: right;
+  }
+  .stat-block .stat-num {
+    font-size: 36px;
+    font-weight: 500;
+    letter-spacing: -0.02em;
+    line-height: 1;
+    font-variant-numeric: tabular-nums;
+  }
+  .stat-block .stat-label {
+    font-size: 12px;
+    opacity: 0.75;
+    margin-top: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  /* ── Capabilities grid with real photos ────────────────── */
+  .grid-section {
+    padding: 100px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+  }
+  .grid-header {
+    margin-bottom: 56px;
+    max-width: 720px;
+  }
+  .grid-header h2 {
+    font-size: clamp(36px, 4.5vw, 56px);
+    font-weight: 500;
+    letter-spacing: -0.025em;
+    line-height: 1.05;
+  }
+  .image-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+  }
+  .image-tile {
+    aspect-ratio: 4 / 5;
+    border-radius: 20px;
+    overflow: hidden;
+    position: relative;
+    cursor: default;
+    transition: transform 0.3s;
+    background: #1a1a1a;
+  }
+  .image-tile:hover { transform: translateY(-4px); }
+  .image-tile img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    transition: transform 0.5s;
+  }
+  .image-tile:hover img { transform: scale(1.04); }
+  .tile-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, transparent 45%, rgba(0,0,0,0.85) 100%);
+    pointer-events: none;
+  }
+  .tile-content {
+    position: absolute;
+    bottom: 28px; left: 28px; right: 28px;
+    color: var(--joby-cream);
+    z-index: 2;
+  }
+  .tile-num {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 8px;
+    letter-spacing: 0.05em;
+    font-weight: 500;
+  }
+  .tile-title {
+    font-size: 24px;
+    font-weight: 500;
+    letter-spacing: -0.015em;
+  }
+
+  .vision {
+    padding: 120px 48px;
+    max-width: 1400px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .vision .eyebrow { justify-content: center; margin-bottom: 32px; }
+  .vision h2 {
+    font-size: clamp(48px, 6vw, 88px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1.05;
+    max-width: 1000px;
+    margin: 0 auto;
+  }
+
+  footer {
+    background: var(--joby-blue);
+    color: var(--joby-cream);
+    padding: 100px 48px 40px;
+  }
+  .footer-inner { max-width: 1400px; margin: 0 auto; }
+  .footer-headline {
+    font-size: clamp(44px, 6vw, 80px);
+    font-weight: 500;
+    letter-spacing: -0.03em;
+    line-height: 1;
+    max-width: 900px;
+    margin-bottom: 80px;
+  }
+  .footer-cols {
+    display: grid;
+    grid-template-columns: 2fr 1fr 1fr 1fr;
+    gap: 48px;
+    border-top: 1px solid rgba(240, 234, 214, 0.2);
+    padding-top: 40px;
+  }
+  .footer-col-title {
+    font-size: 12px;
+    opacity: 0.7;
+    margin-bottom: 16px;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+  .footer-col ul { list-style: none; }
+  .footer-col li {
+    font-size: 14px;
+    margin-bottom: 10px;
+    opacity: 0.85;
+    cursor: default;
+  }
+  .footer-meta {
+    margin-top: 56px;
+    padding-top: 24px;
+    border-top: 1px solid rgba(240, 234, 214, 0.2);
+    display: flex;
+    justify-content: space-between;
+    font-size: 12px;
+    opacity: 0.65;
+  }
+
+  @media (max-width: 880px) {
+    nav { padding: 14px 20px; }
+    .nav-links { display: none; }
+    .hero { grid-template-columns: 1fr; min-height: auto; }
+    .hero-text { padding: 60px 24px; }
+    .hero-image { height: 60vh; min-height: 400px; }
+    .section-image { height: 60vh; }
+    .section-image-content { left: 24px; right: 24px; bottom: 32px; flex-direction: column; align-items: start; gap: 24px; }
+    .section-image-stats { gap: 24px; text-align: left; }
+    .grid-section, .vision { padding: 60px 24px; }
+    .image-grid { grid-template-columns: 1fr; gap: 16px; }
+    .footer-cols { grid-template-columns: 1fr 1fr; }
+    footer { padding: 60px 24px 24px; }
+    #arena { height: 80px; }
+    #target { padding: 16px 32px; font-size: 15px; }
+  }
+</style>
+</head>
+<body>
+
+<nav>
+  <div class="brand">
+    <svg class="brand-mark" viewBox="0 0 56 36" fill="none" xmlns="http://www.w3.org/2000/svg">
+      <path d="M4 8 C 14 24, 22 30, 28 24 C 34 30, 42 24, 52 8 C 42 18, 34 22, 28 16 C 22 22, 14 18, 4 8 Z" fill="currentColor"/>
+    </svg>
+    Composites Manufacturing
+  </div>
+  <div class="nav-links">
+    <span>Capabilities</span>
+    <span>Materials</span>
+    <span>Process</span>
+    <span>Contact</span>
+  </div>
+  <div class="nav-cta">Request a quote</div>
+</nav>
+
+<section class="hero">
+  <div class="hero-text">
+    <div class="eyebrow">
+      <span class="eyebrow-num">01</span>
+      <span>—</span>
+      <span>Composites manufacturing</span>
+    </div>
+    <h1>Stronger.<br />Lighter.<br />Built to fly.</h1>
+    <p>
+      Advanced composite structures for the next generation of aviation.
+    </p>
+    <div id="arena">
+      <button id="target">
+        Explore our team
+        <svg viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 7 L 11 7 M 7 3 L 11 7 L 7 11" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </button>
+    </div>
+    <div class="hero-message" id="message">&nbsp;</div>
+  </div>
+  <div class="hero-image">
+    <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Joby_Aviation_S4_experimental_eVTOL_aircraft_at_Edwards_AFB.jpg/2400px-Joby_Aviation_S4_experimental_eVTOL_aircraft_at_Edwards_AFB.jpg" alt="Joby S4 eVTOL aircraft at Edwards Air Force Base" />
+    <div class="hero-image-caption">
+      <div class="hero-image-eyebrow">The S4</div>
+      <div class="hero-image-title">Built layer by layer.</div>
+    </div>
+  </div>
+</section>
+
+<section class="section-image">
+  <img src="https://images.unsplash.com/photo-1758460400526-b25f6a13ce6c?auto=format&fit=crop&w=2400&q=80" alt="Carbon fiber composite weave close-up" />
+  <div class="section-image-overlay"></div>
+  <div class="section-image-content">
+    <div>
+      <div class="eyebrow">
+        <span class="eyebrow-num">02</span>
+        <span>—</span>
+        <span>Materials</span>
+      </div>
+      <h2>Aerospace-grade carbon fiber.</h2>
+    </div>
+    <div class="section-image-stats">
+      <div class="stat-block">
+        <div class="stat-num">60%</div>
+        <div class="stat-label">Lighter than aluminum</div>
+      </div>
+      <div class="stat-block">
+        <div class="stat-num">5×</div>
+        <div class="stat-label">Stronger by weight</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="grid-section">
+  <div class="grid-header">
+    <div class="eyebrow">
+      <span class="eyebrow-num">03</span>
+      <span>—</span>
+      <span>Capabilities</span>
+    </div>
+    <h2>From layup to flight.</h2>
+  </div>
+  <div class="image-grid">
+    <div class="image-tile">
+      <img src="https://images.unsplash.com/photo-1581092334651-ddf26d9a09d0?auto=format&fit=crop&w=1200&q=80" alt="Engineer inspecting carbon fiber prepreg layup" />
+      <div class="tile-overlay"></div>
+      <div class="tile-content">
+        <div class="tile-num">01</div>
+        <div class="tile-title">Prepreg layup</div>
+      </div>
+    </div>
+    <div class="image-tile">
+      <img src="https://images.unsplash.com/photo-1565043666747-69f6646db940?auto=format&fit=crop&w=1200&q=80" alt="Industrial autoclave for composite curing" />
+      <div class="tile-overlay"></div>
+      <div class="tile-content">
+        <div class="tile-num">02</div>
+        <div class="tile-title">Autoclave cure</div>
+      </div>
+    </div>
+    <div class="image-tile">
+      <img src="https://images.unsplash.com/photo-1581092160607-ee22621dd758?auto=format&fit=crop&w=1200&q=80" alt="Quality inspection of finished composite part" />
+      <div class="tile-overlay"></div>
+      <div class="tile-content">
+        <div class="tile-num">03</div>
+        <div class="tile-title">NDT inspection</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="vision">
+  <div class="eyebrow">
+    <span class="eyebrow-num">04</span>
+    <span>—</span>
+    <span>Our vision</span>
+  </div>
+  <h2>The future of flight is built one layer at a time.</h2>
+</section>
+
+<footer>
+  <div class="footer-inner">
+    <div class="footer-headline">
+      Let's build what's next.
+    </div>
+    <div class="footer-cols">
+      <div class="footer-col">
+        <div class="footer-col-title">Composites Manufacturing</div>
+        <ul>
+          <li>Advanced composite structures for aerospace.</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Capabilities</div>
+        <ul>
+          <li>Layup</li>
+          <li>Autoclave</li>
+          <li>Inspection</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Company</div>
+        <ul>
+          <li>About</li>
+          <li>Careers</li>
+          <li>News</li>
+        </ul>
+      </div>
+      <div class="footer-col">
+        <div class="footer-col-title">Connect</div>
+        <ul>
+          <li>Contact</li>
+          <li>Partners</li>
+          <li>Suppliers</li>
+        </ul>
+      </div>
+    </div>
+    <div class="footer-meta">
+      <span>© 2026 Composites Manufacturing.</span>
+      <span>Built with intention.</span>
+    </div>
+  </div>
+</footer>
+
+<script>
+(function() {
+  const arena   = document.getElementById('arena');
+  const btn     = document.getElementById('target');
+  const message = document.getElementById('message');
+
+  let dodges = 0;
+  let lastIdx = -1;
+
+  const messages = [
+    "Almost. Try clicking the button.",
+    "The button is right there.",
+    "You missed. Try again.",
+    "Are you using a mouse? Try moving it more accurately.",
+    "It's a button. You click it. This isn't difficult.",
+    "Nearly everyone gets this on the first try.",
+    "Some of our older users find this part challenging too.",
+    "Pro tip: aim for the middle of the button.",
+    "We've never had anyone fail this many times.",
+    "Let's slow down and think about what a button is.",
+    "Have you tried clicking with your other hand?",
+    "Our records indicate this is your {n}th attempt.",
+    "Are you sure you're cut out for online forms?",
+    "We're going to need you to focus.",
+    "The button has a job. Your job is to click it.",
+    "Most visitors complete this in under 3 seconds.",
+    "Other users are waiting. Please be considerate.",
+    "If you can't complete this, perhaps a family member could help.",
+    "We're starting to think you're doing this on purpose.",
+    "Forget it. The button is fine. You're the problem.",
+    "We're impressed by your commitment to failing.",
+    "You've spent more time on this button than most people spend on taxes.",
+    "The button has filed a complaint about you with HR.",
+    "Honestly, we'd respect you more if you closed the tab.",
+    "Did you forget what you came here to do?",
+    "We've alerted your IT department. They've alerted your manager.",
+    "The button is writing a memoir. Working title: 'Why Me'.",
+    "Your cursor's movements have been added to a museum exhibit on patience.",
+    "Frankly, the button is winning."
+  ];
+
+  function setMessage(text) {
+    message.style.opacity = '0';
+    setTimeout(() => {
+      message.textContent = text;
+      message.style.opacity = '1';
+    }, 200);
+  }
+
+  function pickMessage() {
+    const cap = Math.min(messages.length, Math.max(3, Math.floor(dodges / 1.2)));
+    let idx;
+    do {
+      idx = Math.floor(Math.random() * cap);
+    } while (idx === lastIdx && cap > 1);
+    lastIdx = idx;
+    setMessage(messages[idx].replace('{n}', dodges));
+  }
+
+  function dodge() {
+    const arenaRect = arena.getBoundingClientRect();
+    const btnRect   = btn.getBoundingClientRect();
+
+    const heroText = document.querySelector('.hero-text');
+    const heroRect = heroText.getBoundingClientRect();
+    const arenaOffsetX = arenaRect.left - heroRect.left;
+    const arenaOffsetY = arenaRect.top  - heroRect.top;
+
+    const padding = 16;
+    const minX = -arenaOffsetX + padding;
+    const maxX = (heroRect.width - arenaOffsetX) - btnRect.width - padding;
+    const minY = -arenaOffsetY + 100;
+    const maxY = (heroRect.height - arenaOffsetY) - btnRect.height - padding;
+
+    const currentX = btnRect.left - arenaRect.left;
+    const currentY = btnRect.top  - arenaRect.top;
+
+    let newX, newY, tries = 0;
+    do {
+      newX = minX + Math.random() * (maxX - minX);
+      newY = minY + Math.random() * (maxY - minY);
+      tries++;
+    } while (tries < 8 && Math.hypot(newX - currentX, newY - currentY) < 140);
+
+    btn.style.left = Math.round(newX) + 'px';
+    btn.style.top  = Math.round(newY) + 'px';
+    btn.style.transform = 'none';
+
+    dodges++;
+    pickMessage();
+  }
+
+  btn.addEventListener('mouseenter', dodge);
+  btn.addEventListener('mousemove', (e) => {
+    const rect = btn.getBoundingClientRect();
+    const cx = rect.left + rect.width / 2;
+    const cy = rect.top + rect.height / 2;
+    if (Math.hypot(e.clientX - cx, e.clientY - cy) < 70) dodge();
+  });
+
+  btn.addEventListener('click', (e) => {
+    e.preventDefault();
+    e.stopPropagation();
+    dodge();
+  });
+})();
+</script>
+
+</body>
+</html>
